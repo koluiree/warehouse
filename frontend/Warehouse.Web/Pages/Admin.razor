@@ -1,0 +1,69 @@
+@page "/admin"
+
+<h1 class="page-title">Пользователи и роли</h1>
+<p class="page-subtitle">Административный UI для управления доступом.</p>
+
+<div class="grid cols-2">
+    <section class="card">
+        <h3>Пользователи</h3>
+        <div class="toolbar">
+            <input placeholder="Логин / Email" />
+            <button>Фильтр</button>
+            <button class="btn-primary">Создать пользователя</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Логин</th>
+                    <th>Email</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>admin</td>
+                    <td>admin@company.local</td>
+                    <td>Активен</td>
+                    <td><button>Редактировать</button></td>
+                </tr>
+                <tr>
+                    <td>storekeeper1</td>
+                    <td>sk1@company.local</td>
+                    <td>Активен</td>
+                    <td><button>Редактировать</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h3>Роли и права</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Роль</th>
+                    <th>Описание</th>
+                    <th>Пользователей</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Admin</td>
+                    <td>Полный доступ к системе</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Storekeeper</td>
+                    <td>Операции склада и выдача</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>DepartmentHead</td>
+                    <td>Согласование заявок</td>
+                    <td>12</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>

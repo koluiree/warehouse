@@ -1,0 +1,65 @@
+@startuml
+title Диаграмма прецедентов — Корпоративный учет и склад
+left to right direction
+
+actor "Неавторизованный пользователь" as Guest
+actor "Авторизованный пользователь" as User
+actor "Кладовщик" as Storekeeper
+actor "Руководитель отдела" as DepartmentHead
+actor "Администратор" as Admin
+
+User <|-- Storekeeper
+User <|-- DepartmentHead
+User <|-- Admin
+
+rectangle "Система складского учета" {
+  usecase "Регистрация" as UC_Register
+  usecase "Авторизация" as UC_Login
+  usecase "Выход из системы" as UC_Logout
+
+  usecase "Просмотр остатков\nпродукции" as UC_ViewStock
+  usecase "Создать заявку\nна выдачу" as UC_CreateRequest
+  usecase "Просмотр статуса\nсвоих заявок" as UC_ViewOwnRequests
+  usecase "Просмотр истории\nперемещений позиции" as UC_ViewHistory
+
+  usecase "Пополнение продукции\nна складе" as UC_Receipt
+  usecase "Списание продукции\nсо склада" as UC_WriteOff
+  usecase "Выдать продукцию\nпо заявке" as UC_IssueByRequest
+  usecase "Обработать заявку\n(принять/отклонить)" as UC_ProcessRequest
+
+  usecase "Просмотр сотрудников" as UC_ViewEmployees
+  usecase "Управление сотрудниками" as UC_ManageEmployees
+  usecase "Просмотр отделов" as UC_ViewDepartments
+  usecase "Создание/редактирование\nотделов" as UC_ManageDepartments
+
+  usecase "Управление пользователями\nи ролями" as UC_ManageUsersRoles
+}
+
+Guest --> UC_Register
+Guest --> UC_Login
+
+User --> UC_Logout
+User --> UC_ViewStock
+User --> UC_CreateRequest
+User --> UC_ViewOwnRequests
+User --> UC_ViewHistory
+
+Storekeeper --> UC_Receipt
+Storekeeper --> UC_WriteOff
+Storekeeper --> UC_IssueByRequest
+Storekeeper --> UC_ProcessRequest
+
+DepartmentHead --> UC_ViewEmployees
+DepartmentHead --> UC_ViewDepartments
+DepartmentHead --> UC_ProcessRequest
+
+Admin --> UC_ManageUsersRoles
+Admin --> UC_ManageEmployees
+Admin --> UC_ManageDepartments
+Admin --> UC_ViewEmployees
+Admin --> UC_ViewDepartments
+
+UC_IssueByRequest .> UC_ProcessRequest : <<include>>
+UC_ProcessRequest .> UC_ViewOwnRequests : <<include>>
+
+@enduml

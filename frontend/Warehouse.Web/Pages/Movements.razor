@@ -1,0 +1,59 @@
+@page "/movements"
+
+<h1 class="page-title">История перемещений</h1>
+<p class="page-subtitle">История по позиции: фильтр по продукту, складу и периоду.</p>
+
+<section class="card">
+    <div class="toolbar">
+        <input placeholder="SKU / Наименование" />
+        <select>
+            <option>Все типы</option>
+            <option>Receipt</option>
+            <option>WriteOff</option>
+            <option>IssueByRequest</option>
+            <option>TransferIn</option>
+            <option>TransferOut</option>
+            <option>Adjustment</option>
+        </select>
+        <select>
+            <option>Все склады</option>
+            <option>Главный склад</option>
+            <option>Цеховой склад</option>
+        </select>
+        <button>Применить</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>SKU</th>
+                <th>Тип</th>
+                <th>Кол-во</th>
+                <th>Документ</th>
+                <th>Комментарий</th>
+                <th>Исполнил</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>27.02.2026 11:12</td>
+                <td>PRD-001</td>
+                <td>IssueByRequest</td>
+                <td>-20</td>
+                <td>RQ-2026-0011</td>
+                <td>Выдача по заявке</td>
+                <td>Кладовщик-1</td>
+            </tr>
+            <tr>
+                <td>27.02.2026 09:02</td>
+                <td>PRD-001</td>
+                <td>Receipt</td>
+                <td>+100</td>
+                <td>RC-2026-0033</td>
+                <td>Поставка от поставщика</td>
+                <td>Кладовщик-2</td>
+            </tr>
+        </tbody>
+    </table>
+</section>

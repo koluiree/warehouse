@@ -1,0 +1,49 @@
+@page "/inventory"
+
+<h1 class="page-title">Остатки продукции</h1>
+<p class="page-subtitle">Просмотр складских остатков и заготовка под операции пополнения/списания.</p>
+
+<section class="card">
+    <div class="toolbar">
+        <input placeholder="Поиск по SKU или названию" />
+        <select>
+            <option>Все склады</option>
+            <option>Главный склад</option>
+            <option>Цеховой склад</option>
+        </select>
+        <button>Обновить</button>
+        <button class="btn-primary">Пополнение</button>
+        <button>Списание</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Наименование</th>
+                <th>Склад</th>
+                <th>Ед.</th>
+                <th>Количество</th>
+                <th>Обновлено</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>PRD-001</td>
+                <td>Подшипник 6204</td>
+                <td>Главный склад</td>
+                <td>шт</td>
+                <td>420</td>
+                <td>27.02.2026 10:15</td>
+            </tr>
+            <tr>
+                <td>PRD-078</td>
+                <td>Ремень A-1250</td>
+                <td>Цеховой склад</td>
+                <td>шт</td>
+                <td>88</td>
+                <td>27.02.2026 09:47</td>
+            </tr>
+        </tbody>
+    </table>
+</section>

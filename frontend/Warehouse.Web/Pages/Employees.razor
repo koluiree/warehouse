@@ -1,0 +1,68 @@
+@page "/employees"
+
+<h1 class="page-title">Сотрудники и отделы</h1>
+<p class="page-subtitle">Экран для просмотра оргструктуры и сотрудников предприятия.</p>
+
+<div class="grid cols-2">
+    <section class="card">
+        <h3>Сотрудники</h3>
+        <div class="toolbar">
+            <input placeholder="Поиск сотрудника" />
+            <button class="btn-primary">Добавить</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>Должность</th>
+                    <th>Отдел</th>
+                    <th>Телефон</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Иванов И.И.</td>
+                    <td>Мастер</td>
+                    <td>Производство</td>
+                    <td>+7 999 111-22-33</td>
+                </tr>
+                <tr>
+                    <td>Петров П.П.</td>
+                    <td>Инженер снабжения</td>
+                    <td>Снабжение</td>
+                    <td>+7 999 222-33-44</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h3>Отделы</h3>
+        <div class="toolbar">
+            <input placeholder="Название или код отдела" />
+            <button>Найти</button>
+            <button class="btn-primary">Создать отдел</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Код</th>
+                    <th>Название</th>
+                    <th>Сотрудников</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PRD</td>
+                    <td>Производство</td>
+                    <td>78</td>
+                </tr>
+                <tr>
+                    <td>WH</td>
+                    <td>Склад</td>
+                    <td>24</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>

@@ -1,0 +1,150 @@
+@startuml
+title Диаграмма классов — Корпоративный учет и склад
+
+skinparam classAttributeIconSize 0
+
+package "Пользователи и оргструктура" {
+  class User {
+    +Id: Guid
+    +Username: string
+    +PasswordHash: string
+    +Email: string
+    +IsActive: bool
+    +LastLoginAt: DateTime?
+  }
+
+  class Role {
+    +Id: int
+    +Name: string
+  }
+
+  class UserRole {
+    +UserId: Guid
+    +RoleId: int
+  }
+
+  class Employee {
+    +Id: Guid
+    +FullName: string
+    +Position: string
+    +Phone: string
+    +IsActive: bool
+  }
+
+  class Department {
+    +Id: int
+    +Name: string
+    +Code: string
+  }
+}
+
+package "Склад и номенклатура" {
+  class Warehouse {
+    +Id: int
+    +Name: string
+    +Address: string
+  }
+
+  class Product {
+    +Id: int
+    +Sku: string
+    +Name: string
+    +Unit: string
+    +Description: string
+  }
+
+  class StockBalance {
+    +Id: long
+    +WarehouseId: int
+    +ProductId: int
+    +Quantity: decimal
+    +UpdatedAt: DateTime
+  }
+
+  enum MovementType {
+    Receipt
+    WriteOff
+    IssueByRequest
+    TransferIn
+    TransferOut
+    Adjustment
+  }
+
+  class StockMovement {
+    +Id: long
+    +WarehouseId: int
+    +ProductId: int
+    +Type: MovementType
+    +Quantity: decimal
+    +OccurredAt: DateTime
+    +DocumentNumber: string
+    +Comment: string
+  }
+}
+
+package "Заявки на выдачу" {
+  enum RequestStatus {
+    Draft
+    Submitted
+    Approved
+    Rejected
+    Issued
+    Cancelled
+  }
+
+  class IssueRequest {
+    +Id: long
+    +RequesterId: Guid
+    +DepartmentId: int
+    +Status: RequestStatus
+    +CreatedAt: DateTime
+    +ApprovedAt: DateTime?
+    +ApprovedById: Guid?
+  }
+
+  class IssueRequestItem {
+    +Id: long
+    +RequestId: long
+    +ProductId: int
+    +RequestedQty: decimal
+    +IssuedQty: decimal
+  }
+}
+
+package "Авторизация" {
+  class RefreshToken {
+    +Id: long
+    +UserId: Guid
+    +TokenHash: string
+    +ExpiresAt: DateTime
+    +RevokedAt: DateTime?
+  }
+}
+
+User "1" -- "0..*" RefreshToken
+User "1" -- "0..*" UserRole
+Role "1" -- "0..*" UserRole
+
+Employee "1" -- "1" User
+Department "1" -- "0..*" Employee
+
+Warehouse "1" -- "0..*" StockBalance
+Product "1" -- "0..*" StockBalance
+
+Warehouse "1" -- "0..*" StockMovement
+Product "1" -- "0..*" StockMovement
+User "1" -- "0..*" StockMovement : performedBy
+
+Department "1" -- "0..*" IssueRequest
+User "1" -- "0..*" IssueRequest : requester
+User "0..1" -- "0..*" IssueRequest : approver
+IssueRequest "1" -- "1..*" IssueRequestItem
+Product "1" -- "0..*" IssueRequestItem
+IssueRequest "0..1" -- "0..*" StockMovement : generated movements
+
+note right of StockMovement
+  История перемещений позиции на складе
+  строится по ProductId + WarehouseId + OccurredAt.
+end note
+
+@enduml

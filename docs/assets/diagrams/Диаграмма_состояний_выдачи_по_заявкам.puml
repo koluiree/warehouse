@@ -1,0 +1,38 @@
+@startuml
+title Диаграмма состояний — выдача предметов по заявкам
+
+[*] --> Draft : создание заявки
+
+Draft --> Submitted : отправить на согласование
+Draft --> Cancelled : отменить
+
+Submitted --> Approved : руководитель одобрил
+Submitted --> Rejected : руководитель отклонил
+Submitted --> Cancelled : заявитель отменил
+
+Approved --> InProgress : кладовщик начал выдачу
+Approved --> Cancelled : отмена до выдачи
+
+InProgress --> PartiallyIssued : выдана часть позиций
+InProgress --> Issued : выдано полностью
+InProgress --> Cancelled : отмена/ошибка обработки
+
+PartiallyIssued --> InProgress : продолжить выдачу
+PartiallyIssued --> Issued : выдан остаток
+PartiallyIssued --> Cancelled : закрыть без полной выдачи
+
+Rejected --> [*]
+Issued --> [*]
+Cancelled --> [*]
+
+note right of Submitted
+  На этапе согласования заявка
+  недоступна для выдачи со склада.
+end note
+
+note right of InProgress
+  Каждая фактическая выдача
+  фиксируется в истории перемещений.
+end note
+
+@enduml

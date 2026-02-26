@@ -1,0 +1,36 @@
+@page "/auth"
+
+<h1 class="page-title">Авторизация и регистрация</h1>
+<p class="page-subtitle">UI-форма без серверной логики. Поля и структура готовы к подключению API.</p>
+
+<div class="grid cols-2">
+    <section class="card">
+        <h3>Вход</h3>
+        <div class="grid">
+            <input placeholder="Логин" />
+            <input placeholder="Пароль" type="password" />
+            <div>
+                <button class="btn-primary">Войти</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h3>Регистрация</h3>
+        <div class="grid">
+            <input placeholder="ФИО" />
+            <input placeholder="Email" type="email" />
+            <input placeholder="Логин" />
+            <input placeholder="Пароль" type="password" />
+            <select>
+                <option>Выберите отдел</option>
+                <option>Производство</option>
+                <option>Снабжение</option>
+                <option>Склад</option>
+            </select>
+            <div>
+                <button class="btn-primary">Создать учетную запись</button>
+            </div>
+        </div>
+    </section>
+</div>

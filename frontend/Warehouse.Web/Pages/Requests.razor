@@ -1,0 +1,89 @@
+@page "/requests"
+
+<h1 class="page-title">Заявки и выдача</h1>
+<p class="page-subtitle">Прототип полного цикла: создание, согласование, выдача, частичная выдача.</p>
+
+<section class="card">
+    <div class="toolbar">
+        <button class="btn-primary">Новая заявка</button>
+        <select>
+            <option>Все статусы</option>
+            <option>Draft</option>
+            <option>Submitted</option>
+            <option>Approved</option>
+            <option>InProgress</option>
+            <option>PartiallyIssued</option>
+            <option>Issued</option>
+            <option>Rejected</option>
+            <option>Cancelled</option>
+        </select>
+        <input placeholder="Поиск по номеру заявки" />
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Заявитель</th>
+                <th>Отдел</th>
+                <th>Статус</th>
+                <th>Создана</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>RQ-2026-0012</td>
+                <td>Иванов И.И.</td>
+                <td>Производство</td>
+                <td><span class="badge b-submitted">Submitted</span></td>
+                <td>27.02.2026 08:35</td>
+                <td><button>Открыть</button></td>
+            </tr>
+            <tr>
+                <td>RQ-2026-0011</td>
+                <td>Петров П.П.</td>
+                <td>Снабжение</td>
+                <td><span class="badge b-approved">Approved</span></td>
+                <td>26.02.2026 17:20</td>
+                <td><button>Выдать</button></td>
+            </tr>
+            <tr>
+                <td>RQ-2026-0010</td>
+                <td>Сидоров А.А.</td>
+                <td>Ремонт</td>
+                <td><span class="badge b-progress">PartiallyIssued</span></td>
+                <td>26.02.2026 15:02</td>
+                <td><button>Продолжить</button></td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section class="card">
+    <h3>Детали выбранной заявки (UI-заготовка)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Наименование</th>
+                <th>Запрошено</th>
+                <th>Выдано</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>PRD-001</td>
+                <td>Подшипник 6204</td>
+                <td>60</td>
+                <td>40</td>
+            </tr>
+            <tr>
+                <td>PRD-031</td>
+                <td>Смазка Литол-24</td>
+                <td>15</td>
+                <td>15</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
