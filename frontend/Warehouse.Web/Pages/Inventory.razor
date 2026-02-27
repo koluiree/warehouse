@@ -1,19 +1,35 @@
 @page "/inventory"
+@inject ApiClient Api
 
 <h1 class="page-title">Остатки продукции</h1>
-<p class="page-subtitle">Просмотр складских остатков и заготовка под операции пополнения/списания.</p>
+<p class="page-subtitle">Просмотр остатков и складские операции.</p>
+
+@if (!string.IsNullOrWhiteSpace(Status))
+{
+    <section class="card">@Status</section>
+}
 
 <section class="card">
     <div class="toolbar">
-        <input placeholder="Поиск по SKU или названию" />
-        <select>
-            <option>Все склады</option>
-            <option>Главный склад</option>
-            <option>Цеховой склад</option>
+        <input placeholder="Поиск по SKU или названию" @bind="Search" />
+        <select @bind="SelectedWarehouseId">
+            <option value="0">Выберите склад</option>
+            @foreach (var w in Warehouses)
+            {
+                <option value="@w.Id">@w.Name</option>
+            }
         </select>
-        <button>Обновить</button>
-        <button class="btn-primary">Пополнение</button>
-        <button>Списание</button>
+        <select @bind="SelectedProductId">
+            <option value="0">Выберите продукт</option>
+            @foreach (var p in Products)
+            {
+                <option value="@p.Id">@p.Sku - @p.Name</option>
+            }
+        </select>
+        <input type="number" step="0.001" placeholder="Количество" @bind="OperationQty" />
+        <button @onclick="LoadData">Обновить</button>
+        <button class="btn-primary" @onclick="Receipt">Пополнение</button>
+        <button @onclick="WriteOff">Списание</button>
     </div>
 
     <table>
@@ -28,22 +44,123 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>PRD-001</td>
-                <td>Подшипник 6204</td>
-                <td>Главный склад</td>
-                <td>шт</td>
-                <td>420</td>
-                <td>27.02.2026 10:15</td>
-            </tr>
-            <tr>
-                <td>PRD-078</td>
-                <td>Ремень A-1250</td>
-                <td>Цеховой склад</td>
-                <td>шт</td>
-                <td>88</td>
-                <td>27.02.2026 09:47</td>
-            </tr>
+            @foreach (var b in FilteredBalances)
+            {
+                <tr>
+                    <td>@b.Product.Sku</td>
+                    <td>@b.Product.Name</td>
+                    <td>@b.Warehouse.Name</td>
+                    <td>@b.Product.Unit</td>
+                    <td>@b.Quantity</td>
+                    <td>@b.UpdatedAt.ToLocalTime()</td>
+                </tr>
+            }
         </tbody>
     </table>
 </section>
+
+<section class="card">
+    <h3>Справочники (склады и продукция)</h3>
+    <div class="grid cols-2">
+        <div>
+            <h4>Создать склад</h4>
+            <div class="toolbar">
+                <input placeholder="Название склада" @bind="NewWarehouseName" />
+                <input placeholder="Адрес" @bind="NewWarehouseAddress" />
+                <button class="btn-primary" @onclick="CreateWarehouse">Создать склад</button>
+            </div>
+        </div>
+        <div>
+            <h4>Добавить продукт</h4>
+            <div class="toolbar">
+                <input placeholder="SKU" @bind="NewSku" />
+                <input placeholder="Наименование" @bind="NewProductName" />
+                <input placeholder="Ед. изм. (шт, кг...)" @bind="NewUnit" />
+                <button class="btn-primary" @onclick="CreateProduct">Добавить продукт</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<BalanceDto> Balances { get; set; } = [];
+    private List<WarehouseDto> Warehouses { get; set; } = [];
+    private List<ProductDto> Products { get; set; } = [];
+
+    private string Search { get; set; } = "";
+    private int SelectedWarehouseId { get; set; }
+    private int SelectedProductId { get; set; }
+    private decimal OperationQty { get; set; }
+    private string Status { get; set; } = "";
+    private string NewWarehouseName { get; set; } = "";
+    private string? NewWarehouseAddress { get; set; }
+    private string NewSku { get; set; } = "";
+    private string NewProductName { get; set; } = "";
+    private string NewUnit { get; set; } = "шт";
+
+    private IEnumerable<BalanceDto> FilteredBalances => Balances.Where(x =>
+        (string.IsNullOrWhiteSpace(Search) || x.Product.Sku.Contains(Search, StringComparison.OrdinalIgnoreCase) || x.Product.Name.Contains(Search, StringComparison.OrdinalIgnoreCase))
+        && (SelectedWarehouseId == 0 || x.Warehouse.Id == SelectedWarehouseId));
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        Warehouses = await Api.GetWarehousesAsync();
+        Products = await Api.GetProductsAsync();
+        Balances = await Api.GetBalancesAsync();
+    }
+
+    private async Task Receipt()
+    {
+        if (!ValidateOperation()) return;
+        var ok = await Api.ReceiptAsync(new InventoryOperationRequest(SelectedWarehouseId, SelectedProductId, OperationQty, null, "Пополнение"));
+        Status = ok ? "Пополнение выполнено." : "Не удалось выполнить пополнение.";
+        await LoadData();
+    }
+
+    private async Task WriteOff()
+    {
+        if (!ValidateOperation()) return;
+        var ok = await Api.WriteOffAsync(new InventoryOperationRequest(SelectedWarehouseId, SelectedProductId, OperationQty, null, "Списание"));
+        Status = ok ? "Списание выполнено." : "Не удалось выполнить списание (проверьте остаток/права).";
+        await LoadData();
+    }
+
+    private bool ValidateOperation()
+    {
+        if (SelectedWarehouseId <= 0 || SelectedProductId <= 0 || OperationQty <= 0)
+        {
+            Status = "Выберите склад, продукт и количество > 0.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task CreateWarehouse()
+    {
+        if (string.IsNullOrWhiteSpace(NewWarehouseName))
+        {
+            Status = "Введите название склада.";
+            return;
+        }
+
+        var ok = await Api.CreateWarehouseAsync(new CreateWarehouseRequest(NewWarehouseName, NewWarehouseAddress));
+        Status = ok ? "Склад создан." : "Не удалось создать склад (нужна роль Storekeeper/Admin).";
+        await LoadData();
+    }
+
+    private async Task CreateProduct()
+    {
+        if (string.IsNullOrWhiteSpace(NewSku) || string.IsNullOrWhiteSpace(NewProductName) || string.IsNullOrWhiteSpace(NewUnit))
+        {
+            Status = "Для продукта заполните SKU, название и единицу измерения.";
+            return;
+        }
+
+        var ok = await Api.CreateProductAsync(new CreateProductRequest(NewSku, NewProductName, NewUnit, null));
+        Status = ok ? "Продукт создан." : "Не удалось создать продукт (проверьте права/уникальность SKU).";
+        await LoadData();
+    }
+}

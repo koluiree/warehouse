@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Hol1yn5MKkaVH3nzGPyaEzBrSdyi683Fbe8CC0FwHyY=",
+  "Hash": "priWdC9qf6XC+musdP71kPvW9CZt1ajC8aUHLV0vSn0=",
   "Source": "Warehouse.Web",
   "BasePath": "/",
   "Mode": "Root",
@@ -31,8 +31,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "WasmResource",
       "AssetTraitValue": "manifest",
-      "Fingerprint": "m90xi9ogat",
-      "Integrity": "ZuoP3fVBnNGFI/Zic97kR52K7NH23jCd9PiHibKSrKE=",
+      "Fingerprint": "14xn4bvojv",
+      "Integrity": "YYdkKYHgo9UGIIL7FxUqCDQ+axANuNZyr++j17brCv8=",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "obj\\Debug\\net8.0\\blazor.boot.json"
@@ -4273,8 +4273,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "WasmResource",
       "AssetTraitValue": "symbol",
-      "Fingerprint": "n0maym24ro",
-      "Integrity": "CdiEGFQLfmeJ7WoXGPC6augurczx9PprKOAkOEVf0/Q=",
+      "Fingerprint": "clu4gkmz7v",
+      "Integrity": "4HOTzOccLgYNPdzh2OnQUTtlg3FJw43DRGRfoiyUPkM=",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "obj\\Debug\\net8.0\\Warehouse.Web.pdb"
@@ -4294,8 +4294,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "WasmResource",
       "AssetTraitValue": "runtime",
-      "Fingerprint": "i3gd3lhhqh",
-      "Integrity": "QsbpcUTzOL3swlK46hlwT9KrcueY7nz+vmucTrlOcs4=",
+      "Fingerprint": "d6aoaq1yp2",
+      "Integrity": "ezRl0dEJoZbVxWSSFmC/nCkPyE5uH2qs48Pwo+18fO0=",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\webcil\\Warehouse.Web.wasm"
@@ -5876,7 +5876,7 @@
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Net.Sockets.wasm"
     },
     {
-      "Identity": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\dnm1vpzaog-i3gd3lhhqh.gz",
+      "Identity": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\dnm1vpzaog-d6aoaq1yp2.gz",
       "SourceId": "Warehouse.Web",
       "SourceType": "Computed",
       "ContentRoot": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\",
@@ -5890,8 +5890,8 @@
       "RelatedAsset": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Warehouse.Web.wasm",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "qy5hzm2u1d",
-      "Integrity": "jgwaS+Y6DQ7jw4/8z8t+cR1eQpW3ISl3F+PF7P73AFg=",
+      "Fingerprint": "4fyx52cp9d",
+      "Integrity": "gGa8iXW0YzaWqFQG+voGjSsiM31CiteNA2NBNzPBplk=",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Warehouse.Web.wasm"
@@ -6443,7 +6443,7 @@
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Reflection.Metadata.wasm"
     },
     {
-      "Identity": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ghttsno8iy-n0maym24ro.gz",
+      "Identity": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ghttsno8iy-clu4gkmz7v.gz",
       "SourceId": "Warehouse.Web",
       "SourceType": "Computed",
       "ContentRoot": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\",
@@ -6457,8 +6457,8 @@
       "RelatedAsset": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Warehouse.Web.pdb",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "80suq0t833",
-      "Integrity": "uOw5eAEtQzzDuhTD/IDZt4iOSDA9DujX9X9LqEA6m1k=",
+      "Fingerprint": "aq4qb2bcer",
+      "Integrity": "joLDZkEFEfKGadGqoSbe9ZdipAkidmJQvlTrsLps9Cg=",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Warehouse.Web.pdb"
@@ -8018,7 +8018,7 @@
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Private.CoreLib.wasm"
     },
     {
-      "Identity": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ww2r1h94on-m90xi9ogat.gz",
+      "Identity": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ww2r1h94on-14xn4bvojv.gz",
       "SourceId": "Warehouse.Web",
       "SourceType": "Computed",
       "ContentRoot": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\",
@@ -8032,8 +8032,8 @@
       "RelatedAsset": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.boot.json",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "ctd1od6nxd",
-      "Integrity": "MIhpZOFbhytE18koRwn7TVEiIR6ubDTl4CYqxPigWMY=",
+      "Fingerprint": "8waatdt3l5",
+      "Integrity": "WImuXFfV7tyOiuy01ITXTlJR0kOYh+XS/VnUzLPOFCc=",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.boot.json"
@@ -8689,11 +8689,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"ZuoP3fVBnNGFI/Zic97kR52K7NH23jCd9PiHibKSrKE=\""
+          "Value": "\"YYdkKYHgo9UGIIL7FxUqCDQ+axANuNZyr++j17brCv8=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:14:42 GMT"
+          "Value": "Fri, 27 Feb 2026 00:51:26 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -8703,13 +8703,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-ZuoP3fVBnNGFI/Zic97kR52K7NH23jCd9PiHibKSrKE="
+          "Value": "sha256-YYdkKYHgo9UGIIL7FxUqCDQ+axANuNZyr++j17brCv8="
         }
       ]
     },
     {
       "Route": "_framework/blazor.boot.json",
-      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ww2r1h94on-m90xi9ogat.gz",
+      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ww2r1h94on-14xn4bvojv.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
@@ -8728,11 +8728,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"MIhpZOFbhytE18koRwn7TVEiIR6ubDTl4CYqxPigWMY=\""
+          "Value": "\"WImuXFfV7tyOiuy01ITXTlJR0kOYh+XS/VnUzLPOFCc=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:14:32 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -8752,19 +8752,19 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"ZuoP3fVBnNGFI/Zic97kR52K7NH23jCd9PiHibKSrKE=\""
+          "Value": "W/\"YYdkKYHgo9UGIIL7FxUqCDQ+axANuNZyr++j17brCv8=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-ZuoP3fVBnNGFI/Zic97kR52K7NH23jCd9PiHibKSrKE="
+          "Value": "sha256-YYdkKYHgo9UGIIL7FxUqCDQ+axANuNZyr++j17brCv8="
         }
       ]
     },
     {
       "Route": "_framework/blazor.boot.json.gz",
-      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ww2r1h94on-m90xi9ogat.gz",
+      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ww2r1h94on-14xn4bvojv.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -8781,11 +8781,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"MIhpZOFbhytE18koRwn7TVEiIR6ubDTl4CYqxPigWMY=\""
+          "Value": "\"WImuXFfV7tyOiuy01ITXTlJR0kOYh+XS/VnUzLPOFCc=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:14:32 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -8803,7 +8803,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-MIhpZOFbhytE18koRwn7TVEiIR6ubDTl4CYqxPigWMY="
+          "Value": "sha256-WImuXFfV7tyOiuy01ITXTlJR0kOYh+XS/VnUzLPOFCc="
         }
       ]
     },
@@ -36355,7 +36355,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "29080"
+          "Value": "63056"
         },
         {
           "Name": "Content-Type",
@@ -36363,11 +36363,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"CdiEGFQLfmeJ7WoXGPC6augurczx9PprKOAkOEVf0/Q=\""
+          "Value": "\"4HOTzOccLgYNPdzh2OnQUTtlg3FJw43DRGRfoiyUPkM=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:06:46 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -36377,18 +36377,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-CdiEGFQLfmeJ7WoXGPC6augurczx9PprKOAkOEVf0/Q="
+          "Value": "sha256-4HOTzOccLgYNPdzh2OnQUTtlg3FJw43DRGRfoiyUPkM="
         }
       ]
     },
     {
       "Route": "_framework/Warehouse.Web.pdb",
-      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ghttsno8iy-n0maym24ro.gz",
+      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ghttsno8iy-clu4gkmz7v.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000043499065"
+          "Quality": "0.000023816328"
         }
       ],
       "ResponseHeaders": [
@@ -36398,15 +36398,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "22988"
+          "Value": "41987"
         },
         {
           "Name": "ETag",
-          "Value": "\"uOw5eAEtQzzDuhTD/IDZt4iOSDA9DujX9X9LqEA6m1k=\""
+          "Value": "\"joLDZkEFEfKGadGqoSbe9ZdipAkidmJQvlTrsLps9Cg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:06:46 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -36426,19 +36426,19 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"CdiEGFQLfmeJ7WoXGPC6augurczx9PprKOAkOEVf0/Q=\""
+          "Value": "W/\"4HOTzOccLgYNPdzh2OnQUTtlg3FJw43DRGRfoiyUPkM=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-CdiEGFQLfmeJ7WoXGPC6augurczx9PprKOAkOEVf0/Q="
+          "Value": "sha256-4HOTzOccLgYNPdzh2OnQUTtlg3FJw43DRGRfoiyUPkM="
         }
       ]
     },
     {
       "Route": "_framework/Warehouse.Web.pdb.gz",
-      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ghttsno8iy-n0maym24ro.gz",
+      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\ghttsno8iy-clu4gkmz7v.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -36447,7 +36447,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "22988"
+          "Value": "41987"
         },
         {
           "Name": "Content-Type",
@@ -36455,11 +36455,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"uOw5eAEtQzzDuhTD/IDZt4iOSDA9DujX9X9LqEA6m1k=\""
+          "Value": "\"joLDZkEFEfKGadGqoSbe9ZdipAkidmJQvlTrsLps9Cg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:06:46 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -36477,7 +36477,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-uOw5eAEtQzzDuhTD/IDZt4iOSDA9DujX9X9LqEA6m1k="
+          "Value": "sha256-joLDZkEFEfKGadGqoSbe9ZdipAkidmJQvlTrsLps9Cg="
         }
       ]
     },
@@ -36492,7 +36492,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "31509"
+          "Value": "139541"
         },
         {
           "Name": "Content-Type",
@@ -36500,11 +36500,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"QsbpcUTzOL3swlK46hlwT9KrcueY7nz+vmucTrlOcs4=\""
+          "Value": "\"ezRl0dEJoZbVxWSSFmC/nCkPyE5uH2qs48Pwo+18fO0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:06:47 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -36514,18 +36514,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-QsbpcUTzOL3swlK46hlwT9KrcueY7nz+vmucTrlOcs4="
+          "Value": "sha256-ezRl0dEJoZbVxWSSFmC/nCkPyE5uH2qs48Pwo+18fO0="
         }
       ]
     },
     {
       "Route": "_framework/Warehouse.Web.wasm",
-      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\dnm1vpzaog-i3gd3lhhqh.gz",
+      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\dnm1vpzaog-d6aoaq1yp2.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000115021854"
+          "Quality": "0.000020014010"
         }
       ],
       "ResponseHeaders": [
@@ -36535,15 +36535,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8693"
+          "Value": "49964"
         },
         {
           "Name": "ETag",
-          "Value": "\"jgwaS+Y6DQ7jw4/8z8t+cR1eQpW3ISl3F+PF7P73AFg=\""
+          "Value": "\"gGa8iXW0YzaWqFQG+voGjSsiM31CiteNA2NBNzPBplk=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:06:47 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -36563,19 +36563,19 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"QsbpcUTzOL3swlK46hlwT9KrcueY7nz+vmucTrlOcs4=\""
+          "Value": "W/\"ezRl0dEJoZbVxWSSFmC/nCkPyE5uH2qs48Pwo+18fO0=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-QsbpcUTzOL3swlK46hlwT9KrcueY7nz+vmucTrlOcs4="
+          "Value": "sha256-ezRl0dEJoZbVxWSSFmC/nCkPyE5uH2qs48Pwo+18fO0="
         }
       ]
     },
     {
       "Route": "_framework/Warehouse.Web.wasm.gz",
-      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\dnm1vpzaog-i3gd3lhhqh.gz",
+      "AssetFile": "C:\\Users\\nikpo\\warehouse\\frontend\\Warehouse.Web\\obj\\Debug\\net8.0\\compressed\\dnm1vpzaog-d6aoaq1yp2.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -36584,7 +36584,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8693"
+          "Value": "49964"
         },
         {
           "Name": "Content-Type",
@@ -36592,11 +36592,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"jgwaS+Y6DQ7jw4/8z8t+cR1eQpW3ISl3F+PF7P73AFg=\""
+          "Value": "\"gGa8iXW0YzaWqFQG+voGjSsiM31CiteNA2NBNzPBplk=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 26 Feb 2026 23:06:47 GMT"
+          "Value": "Fri, 27 Feb 2026 00:49:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -36614,7 +36614,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-jgwaS+Y6DQ7jw4/8z8t+cR1eQpW3ISl3F+PF7P73AFg="
+          "Value": "sha256-gGa8iXW0YzaWqFQG+voGjSsiM31CiteNA2NBNzPBplk="
         }
       ]
     },

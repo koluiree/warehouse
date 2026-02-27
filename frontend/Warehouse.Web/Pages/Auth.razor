@@ -1,16 +1,24 @@
 @page "/auth"
+@inject ApiClient Api
+@inject AppSession Session
 
 <h1 class="page-title">Авторизация и регистрация</h1>
-<p class="page-subtitle">UI-форма без серверной логики. Поля и структура готовы к подключению API.</p>
+<p class="page-subtitle">Вход и создание учетной записи в системе.</p>
+<p class="page-subtitle">Логин: 4-32 символа (латиница, цифры, `_`). Пароль: минимум 8 символов, хотя бы 1 буква и 1 цифра.</p>
+
+@if (!string.IsNullOrWhiteSpace(Status))
+{
+    <section class="card">@Status</section>
+}
 
 <div class="grid cols-2">
     <section class="card">
         <h3>Вход</h3>
         <div class="grid">
-            <input placeholder="Логин" />
-            <input placeholder="Пароль" type="password" />
+            <input placeholder="Логин" @bind="LoginUsername" />
+            <input placeholder="Пароль" type="password" @bind="LoginPassword" />
             <div>
-                <button class="btn-primary">Войти</button>
+                <button class="btn-primary" @onclick="Login">Войти</button>
             </div>
         </div>
     </section>
@@ -18,19 +26,98 @@
     <section class="card">
         <h3>Регистрация</h3>
         <div class="grid">
-            <input placeholder="ФИО" />
-            <input placeholder="Email" type="email" />
-            <input placeholder="Логин" />
-            <input placeholder="Пароль" type="password" />
-            <select>
-                <option>Выберите отдел</option>
-                <option>Производство</option>
-                <option>Снабжение</option>
-                <option>Склад</option>
+            <input placeholder="ФИО" @bind="RegFullName" />
+            <input placeholder="Email" type="email" @bind="RegEmail" />
+            <input placeholder="Логин" @bind="RegUsername" />
+            <input placeholder="Пароль" type="password" @bind="RegPassword" />
+            <input placeholder="Должность" @bind="RegPosition" />
+            <input placeholder="Телефон" @bind="RegPhone" />
+            <select @bind="RegDepartmentId">
+                <option value="0">Назначить отдел автоматически</option>
+                @foreach (var d in Departments)
+                {
+                    <option value="@d.Id">@d.Name (@d.Code)</option>
+                }
             </select>
             <div>
-                <button class="btn-primary">Создать учетную запись</button>
+                <button class="btn-primary" @onclick="Register">Создать учетную запись</button>
             </div>
         </div>
     </section>
 </div>
+
+@code {
+    private string LoginUsername { get; set; } = "";
+    private string LoginPassword { get; set; } = "";
+
+    private string RegFullName { get; set; } = "";
+    private string RegEmail { get; set; } = "";
+    private string RegUsername { get; set; } = "";
+    private string RegPassword { get; set; } = "";
+    private string RegPosition { get; set; } = "Сотрудник";
+    private string? RegPhone { get; set; }
+    private int RegDepartmentId { get; set; }
+    private string Status { get; set; } = "";
+
+    private List<DepartmentDto> Departments { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Departments = await Api.GetDepartmentsAsync();
+    }
+
+    private async Task Login()
+    {
+        if (string.IsNullOrWhiteSpace(LoginUsername) || string.IsNullOrWhiteSpace(LoginPassword))
+        {
+            Status = "Введите логин и пароль.";
+            return;
+        }
+
+        var result = await Api.LoginAsync(new LoginRequest(LoginUsername, LoginPassword));
+        if (result is null)
+        {
+            Session.Clear();
+            Status = "Ошибка входа: проверьте логин и пароль.";
+            return;
+        }
+
+        Session.Set(result.Token, result.User.Username, result.User.Roles);
+        Status = $"Вход выполнен: {result.User.Username}";
+    }
+
+    private async Task Register()
+    {
+        if (string.IsNullOrWhiteSpace(RegUsername) || string.IsNullOrWhiteSpace(RegPassword))
+        {
+            Status = "Логин и пароль обязательны.";
+            return;
+        }
+
+        if (RegUsername.Length < 4)
+        {
+            Status = "Логин должен быть не короче 4 символов.";
+            return;
+        }
+
+        if (RegPassword.Length < 8 || !RegPassword.Any(char.IsLetter) || !RegPassword.Any(char.IsDigit))
+        {
+            Status = "Пароль должен быть минимум 8 символов и содержать букву и цифру.";
+            return;
+        }
+
+        var ok = await Api.RegisterAsync(new RegisterRequest(
+            RegUsername,
+            RegPassword,
+            RegEmail,
+            RegFullName,
+            RegPosition,
+            RegPhone,
+            RegDepartmentId,
+            "Storekeeper"));
+
+        Status = ok
+            ? "Регистрация успешна. Теперь можно войти."
+            : "Ошибка регистрации (возможно, заняты логин/email или нет прав).";
+    }
+}

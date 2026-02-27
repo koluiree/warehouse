@@ -1,3 +1,5 @@
+@implements IDisposable
+
 <nav class="nav-menu">
     <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Панель</NavLink>
     <NavLink class="nav-link" href="/auth">Авторизация</NavLink>
@@ -6,4 +8,30 @@
     <NavLink class="nav-link" href="/movements">История перемещений</NavLink>
     <NavLink class="nav-link" href="/employees">Сотрудники и отделы</NavLink>
     <NavLink class="nav-link" href="/admin">Пользователи и роли</NavLink>
+
+    @if (Session.IsAuthenticated)
+    {
+        <div class="card" style="margin-top:12px;padding:10px;">
+            <div style="font-size:13px;color:#0f172a;">@Session.Username</div>
+            <button style="margin-top:8px;width:100%;" @onclick="Logout">Выйти</button>
+        </div>
+    }
 </nav>
+
+@code {
+    [Inject] public AppSession Session { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Session.Changed += OnSessionChanged;
+    }
+
+    private void Logout() => Session.Clear();
+
+    private void OnSessionChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Session.Changed -= OnSessionChanged;
+    }
+}

@@ -1,5 +1,5 @@
 @startuml
-title Диаграмма классов — Корпоративный учет и склад
+title Диаграмма классов (актуальная версия)
 
 skinparam classAttributeIconSize 0
 
@@ -88,6 +88,8 @@ package "Заявки на выдачу" {
     Submitted
     Approved
     Rejected
+    InProgress
+    PartiallyIssued
     Issued
     Cancelled
   }

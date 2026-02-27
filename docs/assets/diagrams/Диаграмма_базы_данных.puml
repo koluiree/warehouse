@@ -1,0 +1,147 @@
+@startuml
+title ER-диаграмма базы данных warehouse_db (актуальная версия)
+
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity "departments" as departments {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(150) <<UQ>>
+  code : VARCHAR(30) <<UQ>>
+  created_at : DATETIME
+}
+
+entity "users" as users {
+  * id : CHAR(36) <<PK>>
+  --
+  username : VARCHAR(80) <<UQ>>
+  password_hash : VARCHAR(255)
+  email : VARCHAR(150) <<UQ>>
+  is_active : TINYINT(1)
+  last_login_at : DATETIME?
+  created_at : DATETIME
+}
+
+entity "roles" as roles {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(50) <<UQ>>
+}
+
+entity "user_roles" as user_roles {
+  * user_id : CHAR(36) <<PK, FK>>
+  * role_id : INT <<PK, FK>>
+  --
+  assigned_at : DATETIME
+}
+
+entity "employees" as employees {
+  * id : CHAR(36) <<PK>>
+  --
+  user_id : CHAR(36) <<FK, UQ>>
+  department_id : INT <<FK>>
+  full_name : VARCHAR(200)
+  position : VARCHAR(120)
+  phone : VARCHAR(30)?
+  is_active : TINYINT(1)
+  created_at : DATETIME
+}
+
+entity "warehouses" as warehouses {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(150) <<UQ>>
+  address : VARCHAR(255)?
+  created_at : DATETIME
+}
+
+entity "products" as products {
+  * id : INT <<PK>>
+  --
+  sku : VARCHAR(60) <<UQ>>
+  name : VARCHAR(200)
+  unit : VARCHAR(20)
+  description : VARCHAR(500)?
+  created_at : DATETIME
+}
+
+entity "stock_balances" as stock_balances {
+  * id : BIGINT <<PK>>
+  --
+  warehouse_id : INT <<FK>>
+  product_id : INT <<FK>>
+  quantity : DECIMAL(18,3)
+  updated_at : DATETIME
+}
+
+entity "issue_requests" as issue_requests {
+  * id : BIGINT <<PK>>
+  --
+  requester_id : CHAR(36) <<FK>>
+  department_id : INT <<FK>>
+  status : ENUM(Draft,Submitted,Approved,Rejected,InProgress,PartiallyIssued,Issued,Cancelled)
+  created_at : DATETIME
+  approved_at : DATETIME?
+  approved_by_id : CHAR(36)? <<FK>>
+  comment : VARCHAR(500)?
+}
+
+entity "issue_request_items" as issue_request_items {
+  * id : BIGINT <<PK>>
+  --
+  request_id : BIGINT <<FK>>
+  product_id : INT <<FK>>
+  requested_qty : DECIMAL(18,3)
+  issued_qty : DECIMAL(18,3)
+}
+
+entity "stock_movements" as stock_movements {
+  * id : BIGINT <<PK>>
+  --
+  warehouse_id : INT <<FK>>
+  product_id : INT <<FK>>
+  type : ENUM(Receipt,WriteOff,IssueByRequest,TransferIn,TransferOut,Adjustment)
+  quantity : DECIMAL(18,3)
+  occurred_at : DATETIME
+  document_number : VARCHAR(80)?
+  comment : VARCHAR(500)?
+  performed_by_id : CHAR(36)? <<FK>>
+  request_id : BIGINT? <<FK>>
+}
+
+entity "refresh_tokens" as refresh_tokens {
+  * id : BIGINT <<PK>>
+  --
+  user_id : CHAR(36) <<FK>>
+  token_hash : VARCHAR(255) <<UQ>>
+  expires_at : DATETIME
+  revoked_at : DATETIME?
+  created_at : DATETIME
+}
+
+users ||--o{ user_roles
+roles ||--o{ user_roles
+
+users ||--|| employees
+departments ||--o{ employees
+
+warehouses ||--o{ stock_balances
+products ||--o{ stock_balances
+
+users ||--o{ issue_requests : requester_id
+users ||--o{ issue_requests : approved_by_id
+departments ||--o{ issue_requests
+
+issue_requests ||--o{ issue_request_items
+products ||--o{ issue_request_items
+
+warehouses ||--o{ stock_movements
+products ||--o{ stock_movements
+users ||--o{ stock_movements : performed_by_id
+issue_requests ||--o{ stock_movements : request_id
+
+users ||--o{ refresh_tokens
+
+@enduml

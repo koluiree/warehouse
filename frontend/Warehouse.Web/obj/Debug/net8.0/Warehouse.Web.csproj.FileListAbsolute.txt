@@ -1017,9 +1017,6 @@ C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\e863
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\0paxbpzkht-tptq2av103.gz
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\rbr8bozz9c-lfu7j35m59.gz
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\twpitueqx6-oyz0vx2fzb.gz
-C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\dnm1vpzaog-i3gd3lhhqh.gz
-C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\ghttsno8iy-n0maym24ro.gz
-C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\ww2r1h94on-m90xi9ogat.gz
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\staticwebassets.build.endpoints.json
@@ -1034,3 +1031,6 @@ C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\Warehouse.Web.d
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\refint\Warehouse.Web.dll
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\Warehouse.Web.pdb
 C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\ref\Warehouse.Web.dll
+C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\dnm1vpzaog-d6aoaq1yp2.gz
+C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\ghttsno8iy-clu4gkmz7v.gz
+C:\Users\nikpo\warehouse\frontend\Warehouse.Web\obj\Debug\net8.0\compressed\ww2r1h94on-14xn4bvojv.gz

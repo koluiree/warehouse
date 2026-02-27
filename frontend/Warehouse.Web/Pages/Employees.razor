@@ -1,14 +1,19 @@
 @page "/employees"
+@inject ApiClient Api
 
 <h1 class="page-title">Сотрудники и отделы</h1>
-<p class="page-subtitle">Экран для просмотра оргструктуры и сотрудников предприятия.</p>
+<p class="page-subtitle">Справочник сотрудников и организационной структуры.</p>
+
+@if (!string.IsNullOrWhiteSpace(Status))
+{
+    <section class="card">@Status</section>
+}
 
 <div class="grid cols-2">
     <section class="card">
         <h3>Сотрудники</h3>
         <div class="toolbar">
-            <input placeholder="Поиск сотрудника" />
-            <button class="btn-primary">Добавить</button>
+            <button @onclick="Load">Обновить</button>
         </div>
         <table>
             <thead>
@@ -20,18 +25,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Иванов И.И.</td>
-                    <td>Мастер</td>
-                    <td>Производство</td>
-                    <td>+7 999 111-22-33</td>
-                </tr>
-                <tr>
-                    <td>Петров П.П.</td>
-                    <td>Инженер снабжения</td>
-                    <td>Снабжение</td>
-                    <td>+7 999 222-33-44</td>
-                </tr>
+                @foreach (var e in EmployeeList)
+                {
+                    <tr>
+                        <td>@e.FullName</td>
+                        <td>@e.Position</td>
+                        <td>@e.Department.Name</td>
+                        <td>@e.Phone</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </section>
@@ -39,9 +41,9 @@
     <section class="card">
         <h3>Отделы</h3>
         <div class="toolbar">
-            <input placeholder="Название или код отдела" />
-            <button>Найти</button>
-            <button class="btn-primary">Создать отдел</button>
+            <input placeholder="Название отдела" @bind="NewDepartmentName" />
+            <input placeholder="Код отдела" @bind="NewDepartmentCode" />
+            <button class="btn-primary" @onclick="CreateDepartment">Создать отдел</button>
         </div>
         <table>
             <thead>
@@ -52,17 +54,45 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>PRD</td>
-                    <td>Производство</td>
-                    <td>78</td>
-                </tr>
-                <tr>
-                    <td>WH</td>
-                    <td>Склад</td>
-                    <td>24</td>
-                </tr>
+                @foreach (var d in Departments)
+                {
+                    <tr>
+                        <td>@d.Code</td>
+                        <td>@d.Name</td>
+                        <td>-</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </section>
 </div>
+
+@code {
+    private List<EmployeeDto> EmployeeList { get; set; } = [];
+    private List<DepartmentDto> Departments { get; set; } = [];
+
+    private string NewDepartmentName { get; set; } = "";
+    private string NewDepartmentCode { get; set; } = "";
+    private string Status { get; set; } = "";
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load()
+    {
+        EmployeeList = await Api.GetEmployeesAsync();
+        Departments = await Api.GetDepartmentsAsync();
+    }
+
+    private async Task CreateDepartment()
+    {
+        if (string.IsNullOrWhiteSpace(NewDepartmentName) || string.IsNullOrWhiteSpace(NewDepartmentCode))
+        {
+            Status = "Введите название и код отдела.";
+            return;
+        }
+
+        var ok = await Api.CreateDepartmentAsync(new CreateDepartmentRequest(NewDepartmentName, NewDepartmentCode));
+        Status = ok ? "Отдел создан." : "Не удалось создать отдел (нужна роль Admin).";
+        await Load();
+    }
+}

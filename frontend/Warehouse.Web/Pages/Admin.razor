@@ -1,15 +1,19 @@
 @page "/admin"
+@inject ApiClient Api
 
 <h1 class="page-title">Пользователи и роли</h1>
-<p class="page-subtitle">Административный UI для управления доступом.</p>
+<p class="page-subtitle">Администрирование пользователей и ролей доступа.</p>
+
+@if (!string.IsNullOrWhiteSpace(Status))
+{
+    <section class="card">@Status</section>
+}
 
 <div class="grid cols-2">
     <section class="card">
         <h3>Пользователи</h3>
         <div class="toolbar">
-            <input placeholder="Логин / Email" />
-            <button>Фильтр</button>
-            <button class="btn-primary">Создать пользователя</button>
+            <button @onclick="Load">Обновить</button>
         </div>
         <table>
             <thead>
@@ -21,18 +25,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>admin</td>
-                    <td>admin@company.local</td>
-                    <td>Активен</td>
-                    <td><button>Редактировать</button></td>
-                </tr>
-                <tr>
-                    <td>storekeeper1</td>
-                    <td>sk1@company.local</td>
-                    <td>Активен</td>
-                    <td><button>Редактировать</button></td>
-                </tr>
+                @foreach (var user in Users)
+                {
+                    <tr>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@(user.IsActive ? "Активен" : "Неактивен")</td>
+                        <td>
+                            <select @onchange="(e) => OnRoleChanged(user.Id, e.Value?.ToString())">
+                                <option value="Storekeeper">Storekeeper</option>
+                                <option value="DepartmentHead">DepartmentHead</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                            <button @onclick="() => AssignRole(user.Id)">Назначить</button>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </section>
@@ -51,19 +59,49 @@
                 <tr>
                     <td>Admin</td>
                     <td>Полный доступ к системе</td>
-                    <td>2</td>
+                    <td>@Users.Count(x => x.Roles.Contains("Admin"))</td>
                 </tr>
                 <tr>
                     <td>Storekeeper</td>
                     <td>Операции склада и выдача</td>
-                    <td>8</td>
+                    <td>@Users.Count(x => x.Roles.Contains("Storekeeper"))</td>
                 </tr>
                 <tr>
                     <td>DepartmentHead</td>
                     <td>Согласование заявок</td>
-                    <td>12</td>
+                    <td>@Users.Count(x => x.Roles.Contains("DepartmentHead"))</td>
                 </tr>
             </tbody>
         </table>
     </section>
 </div>
+
+@code {
+    private List<AdminUserDto> Users { get; set; } = [];
+    private Dictionary<string, string> SelectedRoleByUser { get; set; } = new();
+    private string Status { get; set; } = "";
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load()
+    {
+        Users = await Api.GetAdminUsersAsync();
+        foreach (var user in Users.Where(u => !SelectedRoleByUser.ContainsKey(u.Id)))
+        {
+            SelectedRoleByUser[user.Id] = "Storekeeper";
+        }
+    }
+
+    private async Task AssignRole(string userId)
+    {
+        var role = SelectedRoleByUser[userId];
+        var ok = await Api.AssignRoleAsync(new AssignRoleRequest(userId, role));
+        Status = ok ? $"Роль {role} назначена." : "Не удалось назначить роль (нужна роль Admin).";
+        await Load();
+    }
+
+    private void OnRoleChanged(string userId, string? role)
+    {
+        SelectedRoleByUser[userId] = string.IsNullOrWhiteSpace(role) ? "Storekeeper" : role;
+    }
+}

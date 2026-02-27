@@ -1,26 +1,12 @@
 @page "/movements"
+@inject ApiClient Api
 
 <h1 class="page-title">История перемещений</h1>
-<p class="page-subtitle">История по позиции: фильтр по продукту, складу и периоду.</p>
+<p class="page-subtitle">Журнал складских движений продукции.</p>
 
 <section class="card">
     <div class="toolbar">
-        <input placeholder="SKU / Наименование" />
-        <select>
-            <option>Все типы</option>
-            <option>Receipt</option>
-            <option>WriteOff</option>
-            <option>IssueByRequest</option>
-            <option>TransferIn</option>
-            <option>TransferOut</option>
-            <option>Adjustment</option>
-        </select>
-        <select>
-            <option>Все склады</option>
-            <option>Главный склад</option>
-            <option>Цеховой склад</option>
-        </select>
-        <button>Применить</button>
+        <button @onclick="Load">Обновить</button>
     </div>
 
     <table>
@@ -36,24 +22,26 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>27.02.2026 11:12</td>
-                <td>PRD-001</td>
-                <td>IssueByRequest</td>
-                <td>-20</td>
-                <td>RQ-2026-0011</td>
-                <td>Выдача по заявке</td>
-                <td>Кладовщик-1</td>
-            </tr>
-            <tr>
-                <td>27.02.2026 09:02</td>
-                <td>PRD-001</td>
-                <td>Receipt</td>
-                <td>+100</td>
-                <td>RC-2026-0033</td>
-                <td>Поставка от поставщика</td>
-                <td>Кладовщик-2</td>
-            </tr>
+            @foreach (var m in MovementList)
+            {
+                <tr>
+                    <td>@m.OccurredAt.ToLocalTime()</td>
+                    <td>@m.ProductId</td>
+                    <td>@m.Type</td>
+                    <td>@m.Quantity</td>
+                    <td>@m.DocumentNumber</td>
+                    <td>@m.Comment</td>
+                    <td>@m.PerformedById</td>
+                </tr>
+            }
         </tbody>
     </table>
 </section>
+
+@code {
+    private List<StockMovementDto> MovementList { get; set; } = [];
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load() => MovementList = await Api.GetMovementsAsync();
+}

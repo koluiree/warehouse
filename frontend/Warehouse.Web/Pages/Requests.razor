@@ -1,12 +1,18 @@
 @page "/requests"
+@inject ApiClient Api
 
 <h1 class="page-title">Заявки и выдача</h1>
-<p class="page-subtitle">Прототип полного цикла: создание, согласование, выдача, частичная выдача.</p>
+<p class="page-subtitle">Создание, согласование и выдача по заявкам.</p>
+
+@if (!string.IsNullOrWhiteSpace(Status))
+{
+    <section class="card">@Status</section>
+}
 
 <section class="card">
     <div class="toolbar">
-        <button class="btn-primary">Новая заявка</button>
-        <select>
+        <button class="btn-primary" @onclick="CreateRequest">Новая заявка</button>
+        <select @bind="FilterStatus">
             <option>Все статусы</option>
             <option>Draft</option>
             <option>Submitted</option>
@@ -17,7 +23,22 @@
             <option>Rejected</option>
             <option>Cancelled</option>
         </select>
-        <input placeholder="Поиск по номеру заявки" />
+        <button @onclick="LoadRequests">Обновить</button>
+        <select @bind="CreateDepartmentId">
+            <option value="0">Отдел для новой заявки</option>
+            @foreach (var d in Departments)
+            {
+                <option value="@d.Id">@d.Name</option>
+            }
+        </select>
+        <select @bind="CreateProductId">
+            <option value="0">Продукт</option>
+            @foreach (var p in Products)
+            {
+                <option value="@p.Id">@p.Sku - @p.Name</option>
+            }
+        </select>
+        <input type="number" step="0.001" placeholder="Количество" @bind="CreateQty" />
     </div>
 
     <table>
@@ -32,58 +53,150 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>RQ-2026-0012</td>
-                <td>Иванов И.И.</td>
-                <td>Производство</td>
-                <td><span class="badge b-submitted">Submitted</span></td>
-                <td>27.02.2026 08:35</td>
-                <td><button>Открыть</button></td>
-            </tr>
-            <tr>
-                <td>RQ-2026-0011</td>
-                <td>Петров П.П.</td>
-                <td>Снабжение</td>
-                <td><span class="badge b-approved">Approved</span></td>
-                <td>26.02.2026 17:20</td>
-                <td><button>Выдать</button></td>
-            </tr>
-            <tr>
-                <td>RQ-2026-0010</td>
-                <td>Сидоров А.А.</td>
-                <td>Ремонт</td>
-                <td><span class="badge b-progress">PartiallyIssued</span></td>
-                <td>26.02.2026 15:02</td>
-                <td><button>Продолжить</button></td>
-            </tr>
+            @foreach (var r in RequestList)
+            {
+                <tr>
+                    <td>@r.Id</td>
+                    <td>@r.RequesterId</td>
+                    <td>@r.DepartmentId</td>
+                    <td><span class="badge">@r.Status</span></td>
+                    <td>@r.CreatedAt.ToLocalTime()</td>
+                    <td>
+                        <button @onclick="() => SelectRequest(r.Id)">Открыть</button>
+                        <button @onclick="() => Approve(r.Id)">Одобрить</button>
+                        <button @onclick="() => Reject(r.Id)">Отклонить</button>
+                        <button @onclick="() => StartIssue(r.Id)">Начать выдачу</button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </section>
 
 <section class="card">
-    <h3>Детали выбранной заявки (UI-заготовка)</h3>
+    <h3>Детали выбранной заявки</h3>
+    <div class="toolbar">
+        <select @bind="IssueWarehouseId">
+            <option value="0">Склад выдачи</option>
+            @foreach (var w in Warehouses)
+            {
+                <option value="@w.Id">@w.Name</option>
+            }
+        </select>
+        <input type="number" step="0.001" placeholder="Количество выдачи" @bind="IssueQty" />
+        <button class="btn-primary" @onclick="IssueSelectedItem">Выдать выбранную позицию</button>
+    </div>
     <table>
         <thead>
             <tr>
-                <th>SKU</th>
-                <th>Наименование</th>
+                <th>ID позиции</th>
+                <th>ProductId</th>
                 <th>Запрошено</th>
                 <th>Выдано</th>
+                <th>Действие</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>PRD-001</td>
-                <td>Подшипник 6204</td>
-                <td>60</td>
-                <td>40</td>
-            </tr>
-            <tr>
-                <td>PRD-031</td>
-                <td>Смазка Литол-24</td>
-                <td>15</td>
-                <td>15</td>
-            </tr>
+            @foreach (var item in SelectedItems)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.ProductId</td>
+                    <td>@item.RequestedQty</td>
+                    <td>@item.IssuedQty</td>
+                    <td><button @onclick="() => SelectedItemProductId = item.ProductId">Выбрать</button></td>
+                </tr>
+            }
         </tbody>
     </table>
 </section>
+
+@code {
+    private List<IssueRequestDto> RequestList { get; set; } = [];
+    private List<IssueRequestItemDto> SelectedItems { get; set; } = [];
+    private List<DepartmentDto> Departments { get; set; } = [];
+    private List<ProductDto> Products { get; set; } = [];
+    private List<WarehouseDto> Warehouses { get; set; } = [];
+
+    private string FilterStatus { get; set; } = "Все статусы";
+    private int CreateDepartmentId { get; set; }
+    private int CreateProductId { get; set; }
+    private decimal CreateQty { get; set; }
+    private long SelectedRequestId { get; set; }
+    private int SelectedItemProductId { get; set; }
+    private int IssueWarehouseId { get; set; }
+    private decimal IssueQty { get; set; }
+    private string Status { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Departments = await Api.GetDepartmentsAsync();
+        Products = await Api.GetProductsAsync();
+        Warehouses = await Api.GetWarehousesAsync();
+        await LoadRequests();
+    }
+
+    private async Task LoadRequests()
+    {
+        var status = FilterStatus == "Все статусы" ? null : FilterStatus;
+        RequestList = await Api.GetRequestsAsync(status);
+    }
+
+    private async Task CreateRequest()
+    {
+        if (CreateProductId <= 0 || CreateQty <= 0)
+        {
+            Status = "Выберите продукт и количество > 0.";
+            return;
+        }
+
+        var ok = await Api.CreateRequestAsync(new CreateIssueRequestRequest(
+            CreateDepartmentId,
+            "Создано пользователем",
+            [new CreateIssueRequestItemRequest(CreateProductId, CreateQty)]));
+
+        Status = ok ? "Заявка создана." : "Ошибка создания заявки.";
+        await LoadRequests();
+    }
+
+    private async Task SelectRequest(long id)
+    {
+        SelectedRequestId = id;
+        SelectedItems = await Api.GetRequestItemsAsync(id);
+    }
+
+    private async Task Approve(long id)
+    {
+        var ok = await Api.ApproveRequestAsync(id, "Одобрено");
+        Status = ok ? "Заявка одобрена." : "Не удалось одобрить заявку.";
+        await LoadRequests();
+    }
+
+    private async Task Reject(long id)
+    {
+        var ok = await Api.RejectRequestAsync(id, "Отклонено");
+        Status = ok ? "Заявка отклонена." : "Не удалось отклонить заявку.";
+        await LoadRequests();
+    }
+
+    private async Task StartIssue(long id)
+    {
+        var ok = await Api.StartIssueAsync(id);
+        Status = ok ? "Выдача начата." : "Не удалось перевести заявку в выдачу.";
+        await LoadRequests();
+    }
+
+    private async Task IssueSelectedItem()
+    {
+        if (SelectedRequestId <= 0 || SelectedItemProductId <= 0 || IssueWarehouseId <= 0 || IssueQty <= 0)
+        {
+            Status = "Выберите заявку, позицию, склад и количество > 0.";
+            return;
+        }
+
+        var ok = await Api.IssueItemAsync(SelectedRequestId, new IssueItemRequest(IssueWarehouseId, SelectedItemProductId, IssueQty, "Выдано по заявке"));
+        Status = ok ? "Позиция выдана." : "Ошибка выдачи позиции.";
+        SelectedItems = await Api.GetRequestItemsAsync(SelectedRequestId);
+        await LoadRequests();
+    }
+}
