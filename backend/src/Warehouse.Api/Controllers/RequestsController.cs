@@ -21,8 +21,47 @@ public class RequestsController(WarehouseDbContext db) : ControllerBase
             query = query.Where(x => x.Status == status);
         }
 
-        var items = await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
-        return Ok(items);
+        var requests = await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
+
+        var requesterIds = requests.Select(r => r.RequesterId).Distinct().ToList();
+        var users = await db.Users
+            .Where(u => requesterIds.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id, u => u.Username);
+
+        var requestIds = requests.Select(r => r.Id).ToList();
+        var allItems = await db.IssueRequestItems
+            .Where(i => requestIds.Contains(i.RequestId))
+            .ToListAsync();
+
+        var productIds = allItems.Select(i => i.ProductId).Distinct().ToList();
+        var products = await db.Products
+            .Where(p => productIds.Contains(p.Id))
+            .ToDictionaryAsync(p => p.Id, p => p.Name);
+
+        var result = requests.Select(r =>
+        {
+            var items = allItems.Where(i => i.RequestId == r.Id).ToList();
+            return new
+            {
+                r.Id,
+                r.RequesterId,
+                RequesterName = users.GetValueOrDefault(r.RequesterId, "—"),
+                r.DepartmentId,
+                r.Status,
+                r.CreatedAt,
+                r.ApprovedAt,
+                r.ApprovedById,
+                r.Comment,
+                Items = items.Select(i => new
+                {
+                    ProductName = products.GetValueOrDefault(i.ProductId, $"ID {i.ProductId}"),
+                    i.RequestedQty,
+                    i.IssuedQty
+                })
+            };
+        });
+
+        return Ok(result);
     }
 
     [HttpGet("{id:long}/items")]
@@ -69,6 +108,20 @@ public class RequestsController(WarehouseDbContext db) : ControllerBase
         if (departmentId <= 0)
         {
             return BadRequest("Department is required to create request.");
+        }
+
+        foreach (var ri in request.Items)
+        {
+            if (ri.RequestedQty <= 0)
+                return BadRequest("Количество должно быть > 0.");
+
+            var prod = await db.Products.FindAsync(ri.ProductId);
+            if (prod is null)
+                return BadRequest($"Продукт с id={ri.ProductId} не найден.");
+            if (prod.IsInteger && ri.RequestedQty != Math.Truncate(ri.RequestedQty))
+                return BadRequest($"Продукт «{prod.Name}» допускает только целое количество.");
+            if (prod.MinQty > 0 && ri.RequestedQty < prod.MinQty)
+                return BadRequest($"Минимальное количество для «{prod.Name}»: {prod.MinQty}.");
         }
 
         var entity = new IssueRequest
@@ -181,6 +234,13 @@ public class RequestsController(WarehouseDbContext db) : ControllerBase
         {
             return BadRequest("Request is not in issue state.");
         }
+
+        var product = await db.Products.FindAsync(request.ProductId);
+        if (product is null) return BadRequest("Product not found.");
+        if (product.IsInteger && request.Quantity != Math.Truncate(request.Quantity))
+            return BadRequest("Для данного продукта допустимо только целое количество.");
+        if (product.MinQty > 0 && request.Quantity < product.MinQty)
+            return BadRequest($"Минимальное количество для операции: {product.MinQty}.");
 
         var item = await db.IssueRequestItems.FirstOrDefaultAsync(x => x.RequestId == id && x.ProductId == request.ProductId);
         if (item is null)

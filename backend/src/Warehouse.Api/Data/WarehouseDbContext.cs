@@ -85,6 +85,8 @@ public class WarehouseDbContext(DbContextOptions<WarehouseDbContext> options) : 
             entity.Property(x => x.Sku).HasColumnName("sku");
             entity.Property(x => x.Name).HasColumnName("name");
             entity.Property(x => x.Unit).HasColumnName("unit");
+            entity.Property(x => x.MinQty).HasColumnName("min_qty");
+            entity.Property(x => x.IsInteger).HasColumnName("is_integer").HasColumnType("tinyint(1)");
             entity.Property(x => x.Description).HasColumnName("description");
             entity.Property(x => x.CreatedAt).HasColumnName("created_at");
         });

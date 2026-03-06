@@ -8,6 +8,7 @@ namespace Warehouse.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DepartmentsController(WarehouseDbContext db) : ControllerBase
 {
     [HttpGet]

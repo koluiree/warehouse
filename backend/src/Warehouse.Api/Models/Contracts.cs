@@ -15,7 +15,8 @@ public record LoginRequest(string Username, string Password);
 
 public record CreateDepartmentRequest(string Name, string Code);
 
-public record CreateProductRequest(string Sku, string Name, string Unit, string? Description);
+public record CreateProductRequest(string Sku, string Name, string Unit, decimal MinQty, bool IsInteger, string? Description);
+public record UpdateProductRequest(string Name, string Unit, decimal MinQty, bool IsInteger, string? Description);
 public record CreateWarehouseRequest(string Name, string? Address);
 
 public record InventoryOperationRequest(
@@ -39,3 +40,5 @@ public record ProcessIssueRequestRequest(string? Comment);
 public record IssueItemRequest(int WarehouseId, int ProductId, decimal Quantity, string? Comment);
 
 public record AssignRoleRequest(string UserId, string RoleName);
+public record RemoveRoleRequest(string UserId, string RoleName);
+public record ChangeDepartmentRequest(string UserId, int DepartmentId);

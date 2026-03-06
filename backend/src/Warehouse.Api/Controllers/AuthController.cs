@@ -84,12 +84,14 @@ public class AuthController(WarehouseDbContext db, JwtTokenService jwtTokenServi
         db.Employees.Add(employee);
         await db.SaveChangesAsync();
 
-        var roleName = string.IsNullOrWhiteSpace(request.Role) ? "Storekeeper" : request.Role.Trim();
-        var role = await db.Roles.FirstOrDefaultAsync(x => x.Name == roleName);
-        if (role is not null)
+        if (!string.IsNullOrWhiteSpace(request.Role))
         {
-            db.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = role.Id, AssignedAt = DateTime.UtcNow });
-            await db.SaveChangesAsync();
+            var role = await db.Roles.FirstOrDefaultAsync(x => x.Name == request.Role.Trim());
+            if (role is not null)
+            {
+                db.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = role.Id, AssignedAt = DateTime.UtcNow });
+                await db.SaveChangesAsync();
+            }
         }
 
         return Ok(new { user.Id, user.Username, user.Email });

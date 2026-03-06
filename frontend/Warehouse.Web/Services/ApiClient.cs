@@ -59,6 +59,13 @@ public class ApiClient(HttpClient httpClient, AppSession session)
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<bool> UpdateProductAsync(int id, UpdateProductRequest payload)
+    {
+        ApplyAuthHeader();
+        var response = await httpClient.PutAsJsonAsync($"api/products/{id}", payload);
+        return response.IsSuccessStatusCode;
+    }
+
     public async Task<List<WarehouseDto>> GetWarehousesAsync()
     {
         ApplyAuthHeader();
@@ -105,39 +112,52 @@ public class ApiClient(HttpClient httpClient, AppSession session)
         return await httpClient.GetFromJsonAsync<List<IssueRequestItemDto>>($"api/requests/{id}/items") ?? [];
     }
 
-    public async Task<bool> CreateRequestAsync(CreateIssueRequestRequest payload)
+    public async Task<string?> CreateRequestAsync(CreateIssueRequestRequest payload)
     {
         ApplyAuthHeader();
         var response = await httpClient.PostAsJsonAsync("api/requests", payload);
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadAsStringAsync();
     }
 
-    public async Task<bool> ApproveRequestAsync(long id, string? comment = null)
+    public async Task<string?> ApproveRequestAsync(long id, string? comment = null)
     {
         ApplyAuthHeader();
         var response = await httpClient.PostAsJsonAsync($"api/requests/{id}/approve", new ProcessIssueRequestRequest(comment));
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadAsStringAsync();
     }
 
-    public async Task<bool> RejectRequestAsync(long id, string? comment = null)
+    public async Task<string?> RejectRequestAsync(long id, string? comment = null)
     {
         ApplyAuthHeader();
         var response = await httpClient.PostAsJsonAsync($"api/requests/{id}/reject", new ProcessIssueRequestRequest(comment));
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadAsStringAsync();
     }
 
-    public async Task<bool> StartIssueAsync(long id)
+    public async Task<string?> CancelRequestAsync(long id, string? comment = null)
+    {
+        ApplyAuthHeader();
+        var response = await httpClient.PostAsJsonAsync($"api/requests/{id}/cancel", new ProcessIssueRequestRequest(comment));
+        if (response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<string?> StartIssueAsync(long id)
     {
         ApplyAuthHeader();
         var response = await httpClient.PostAsync($"api/requests/{id}/start-issue", null);
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadAsStringAsync();
     }
 
-    public async Task<bool> IssueItemAsync(long id, IssueItemRequest payload)
+    public async Task<string?> IssueItemAsync(long id, IssueItemRequest payload)
     {
         ApplyAuthHeader();
         var response = await httpClient.PostAsJsonAsync($"api/requests/{id}/issue-item", payload);
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadAsStringAsync();
     }
 
     public async Task<List<StockMovementDto>> GetMovementsAsync()
@@ -156,6 +176,20 @@ public class ApiClient(HttpClient httpClient, AppSession session)
     {
         ApplyAuthHeader();
         var response = await httpClient.PostAsJsonAsync("api/admin/assign-role", payload);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> RemoveRoleAsync(RemoveRoleRequest payload)
+    {
+        ApplyAuthHeader();
+        var response = await httpClient.PostAsJsonAsync("api/admin/remove-role", payload);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> ChangeDepartmentAsync(ChangeDepartmentRequest payload)
+    {
+        ApplyAuthHeader();
+        var response = await httpClient.PostAsJsonAsync("api/admin/change-department", payload);
         return response.IsSuccessStatusCode;
     }
 }

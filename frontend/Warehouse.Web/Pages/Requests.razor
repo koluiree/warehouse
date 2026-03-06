@@ -6,26 +6,14 @@
 
 @if (!string.IsNullOrWhiteSpace(Status))
 {
-    <section class="card">@Status</section>
+    <section class="card" style="@(IsError ? "color:#c62828;border-left:4px solid #c62828;" : "")">@Status</section>
 }
 
 <section class="card">
+    <h3>Новая заявка</h3>
     <div class="toolbar">
-        <button class="btn-primary" @onclick="CreateRequest">Новая заявка</button>
-        <select @bind="FilterStatus">
-            <option>Все статусы</option>
-            <option>Draft</option>
-            <option>Submitted</option>
-            <option>Approved</option>
-            <option>InProgress</option>
-            <option>PartiallyIssued</option>
-            <option>Issued</option>
-            <option>Rejected</option>
-            <option>Cancelled</option>
-        </select>
-        <button @onclick="LoadRequests">Обновить</button>
         <select @bind="CreateDepartmentId">
-            <option value="0">Отдел для новой заявки</option>
+            <option value="0">Отдел</option>
             @foreach (var d in Departments)
             {
                 <option value="@d.Id">@d.Name</option>
@@ -35,10 +23,28 @@
             <option value="0">Продукт</option>
             @foreach (var p in Products)
             {
-                <option value="@p.Id">@p.Sku - @p.Name</option>
+                <option value="@p.Id">@p.Sku — @p.Name (@p.Unit, @(p.IsInteger ? "целое" : "дробное"), мин. @p.MinQty)</option>
             }
         </select>
-        <input type="number" step="0.001" placeholder="Количество" @bind="CreateQty" />
+        <input type="number" step="@InputStep" placeholder="Количество" @bind="CreateQty" />
+        <button class="btn-primary" @onclick="CreateRequest">Создать заявку</button>
+    </div>
+</section>
+
+<section class="card">
+    <h3>Список заявок</h3>
+    <div class="toolbar">
+        <select @bind="FilterStatus">
+            <option>Все статусы</option>
+            <option>Submitted</option>
+            <option>Approved</option>
+            <option>InProgress</option>
+            <option>PartiallyIssued</option>
+            <option>Issued</option>
+            <option>Rejected</option>
+            <option>Cancelled</option>
+        </select>
+        <button @onclick="LoadRequests">Обновить</button>
     </div>
 
     <table>
@@ -46,7 +52,7 @@
             <tr>
                 <th>№</th>
                 <th>Заявитель</th>
-                <th>Отдел</th>
+                <th>Продукция</th>
                 <th>Статус</th>
                 <th>Создана</th>
                 <th>Действия</th>
@@ -55,17 +61,36 @@
         <tbody>
             @foreach (var r in RequestList)
             {
-                <tr>
+                var isSelected = r.Id == SelectedRequestId;
+                <tr style="@(isSelected ? "background:#e3f2fd;" : "")">
                     <td>@r.Id</td>
-                    <td>@r.RequesterId</td>
-                    <td>@r.DepartmentId</td>
+                    <td>@r.RequesterName</td>
+                    <td>
+                        @if (r.Items is not null)
+                        {
+                            @foreach (var it in r.Items)
+                            {
+                                <div>@it.ProductName: @it.RequestedQty (выдано @it.IssuedQty)</div>
+                            }
+                        }
+                    </td>
                     <td><span class="badge">@r.Status</span></td>
                     <td>@r.CreatedAt.ToLocalTime()</td>
                     <td>
-                        <button @onclick="() => SelectRequest(r.Id)">Открыть</button>
-                        <button @onclick="() => Approve(r.Id)">Одобрить</button>
-                        <button @onclick="() => Reject(r.Id)">Отклонить</button>
-                        <button @onclick="() => StartIssue(r.Id)">Начать выдачу</button>
+                        <button class="@(isSelected ? "btn-primary" : "")" @onclick="() => SelectRequest(r.Id)">Открыть</button>
+                        @if (r.Status == "Submitted")
+                        {
+                            <button @onclick="() => Approve(r.Id)">Одобрить</button>
+                            <button @onclick="() => Reject(r.Id)">Отклонить</button>
+                        }
+                        @if (r.Status == "Approved")
+                        {
+                            <button class="btn-primary" @onclick="() => StartIssue(r.Id)">Начать выдачу</button>
+                        }
+                        @if (r.Status is not "Issued" and not "Cancelled" and not "Rejected")
+                        {
+                            <button @onclick="() => Cancel(r.Id)">Отменить</button>
+                        }
                     </td>
                 </tr>
             }
@@ -73,43 +98,73 @@
     </table>
 </section>
 
-<section class="card">
-    <h3>Детали выбранной заявки</h3>
-    <div class="toolbar">
-        <select @bind="IssueWarehouseId">
-            <option value="0">Склад выдачи</option>
-            @foreach (var w in Warehouses)
-            {
-                <option value="@w.Id">@w.Name</option>
-            }
-        </select>
-        <input type="number" step="0.001" placeholder="Количество выдачи" @bind="IssueQty" />
-        <button class="btn-primary" @onclick="IssueSelectedItem">Выдать выбранную позицию</button>
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th>ID позиции</th>
-                <th>ProductId</th>
-                <th>Запрошено</th>
-                <th>Выдано</th>
-                <th>Действие</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in SelectedItems)
-            {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.ProductId</td>
-                    <td>@item.RequestedQty</td>
-                    <td>@item.IssuedQty</td>
-                    <td><button @onclick="() => SelectedItemProductId = item.ProductId">Выбрать</button></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</section>
+@if (SelectedRequestId > 0)
+{
+    <section class="card">
+        <h3>Детали заявки №@SelectedRequestId</h3>
+
+        @if (SelectedItems.Count == 0)
+        {
+            <p>Нет позиций.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Продукт</th>
+                        <th>Ед.</th>
+                        <th>Тип</th>
+                        <th>Запрошено</th>
+                        <th>Выдано</th>
+                        <th>Осталось выдать</th>
+                        <th>Выдача</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in SelectedItems)
+                    {
+                        var product = Products.FirstOrDefault(p => p.Id == item.ProductId);
+                        var remaining = item.RequestedQty - item.IssuedQty;
+                        var fullyIssued = remaining <= 0;
+                        <tr style="@(fullyIssued ? "background:#e8f5e9;" : "")">
+                            <td>@(product?.Name ?? $"ID {item.ProductId}")</td>
+                            <td>@(product?.Unit ?? "—")</td>
+                            <td>@(product is not null ? (product.IsInteger ? "Целое" : "Дробное") : "—")</td>
+                            <td>@item.RequestedQty</td>
+                            <td>@item.IssuedQty</td>
+                            <td style="@(fullyIssued ? "color:green;font-weight:bold;" : "color:#c62828;font-weight:bold;")">
+                                @(fullyIssued ? "Выдано полностью" : remaining.ToString())
+                            </td>
+                            <td>
+                                @if (!fullyIssued)
+                                {
+                                    <div style="display:flex;gap:4px;align-items:center;">
+                                        <select @bind="IssueWarehouseId" style="min-width:120px">
+                                            <option value="0">Склад</option>
+                                            @foreach (var w in Warehouses)
+                                            {
+                                                <option value="@w.Id">@w.Name</option>
+                                            }
+                                        </select>
+                                        <input type="number"
+                                               step="@(product is not null && product.IsInteger ? "1" : "0.001")"
+                                               min="@(product?.MinQty ?? 0)"
+                                               max="@remaining"
+                                               placeholder="Кол-во (макс. @remaining)"
+                                               @bind="IssueQty"
+                                               style="width:140px" />
+                                        <button class="btn-primary" @onclick="() => IssueItem(item.ProductId)">Выдать</button>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
 
 @code {
     private List<IssueRequestDto> RequestList { get; set; } = [];
@@ -123,10 +178,13 @@
     private int CreateProductId { get; set; }
     private decimal CreateQty { get; set; }
     private long SelectedRequestId { get; set; }
-    private int SelectedItemProductId { get; set; }
     private int IssueWarehouseId { get; set; }
     private decimal IssueQty { get; set; }
     private string Status { get; set; } = "";
+    private bool IsError { get; set; }
+
+    private string InputStep => SelectedProduct is not null && SelectedProduct.IsInteger ? "1" : "0.001";
+    private ProductDto? SelectedProduct => Products.FirstOrDefault(p => p.Id == CreateProductId);
 
     protected override async Task OnInitializedAsync()
     {
@@ -142,20 +200,41 @@
         RequestList = await Api.GetRequestsAsync(status);
     }
 
+    private void SetStatus(string msg, bool error = false) { Status = msg; IsError = error; }
+
     private async Task CreateRequest()
     {
         if (CreateProductId <= 0 || CreateQty <= 0)
         {
-            Status = "Выберите продукт и количество > 0.";
+            SetStatus("Выберите продукт и укажите количество > 0.", true);
             return;
         }
 
-        var ok = await Api.CreateRequestAsync(new CreateIssueRequestRequest(
+        var prod = SelectedProduct;
+        if (prod is not null)
+        {
+            if (prod.IsInteger && CreateQty != Math.Truncate(CreateQty))
+            {
+                SetStatus($"Продукт «{prod.Name}» допускает только целое количество.", true);
+                return;
+            }
+            if (prod.MinQty > 0 && CreateQty < prod.MinQty)
+            {
+                SetStatus($"Минимальное количество для «{prod.Name}»: {prod.MinQty}.", true);
+                return;
+            }
+        }
+
+        var err = await Api.CreateRequestAsync(new CreateIssueRequestRequest(
             CreateDepartmentId,
             "Создано пользователем",
             [new CreateIssueRequestItemRequest(CreateProductId, CreateQty)]));
 
-        Status = ok ? "Заявка создана." : "Ошибка создания заявки.";
+        if (err is null)
+            SetStatus("Заявка создана.");
+        else
+            SetStatus($"Ошибка: {err}", true);
+
         await LoadRequests();
     }
 
@@ -163,40 +242,62 @@
     {
         SelectedRequestId = id;
         SelectedItems = await Api.GetRequestItemsAsync(id);
+        IssueQty = 0;
     }
 
     private async Task Approve(long id)
     {
-        var ok = await Api.ApproveRequestAsync(id, "Одобрено");
-        Status = ok ? "Заявка одобрена." : "Не удалось одобрить заявку.";
+        var err = await Api.ApproveRequestAsync(id, "Одобрено");
+        if (err is null) SetStatus("Заявка одобрена."); else SetStatus($"Ошибка: {err}", true);
         await LoadRequests();
     }
 
     private async Task Reject(long id)
     {
-        var ok = await Api.RejectRequestAsync(id, "Отклонено");
-        Status = ok ? "Заявка отклонена." : "Не удалось отклонить заявку.";
+        var err = await Api.RejectRequestAsync(id, "Отклонено");
+        if (err is null) SetStatus("Заявка отклонена."); else SetStatus($"Ошибка: {err}", true);
         await LoadRequests();
     }
 
     private async Task StartIssue(long id)
     {
-        var ok = await Api.StartIssueAsync(id);
-        Status = ok ? "Выдача начата." : "Не удалось перевести заявку в выдачу.";
+        var err = await Api.StartIssueAsync(id);
+        if (err is null) SetStatus("Выдача начата."); else SetStatus($"Ошибка: {err}", true);
+        await LoadRequests();
+        if (SelectedRequestId == id)
+            SelectedItems = await Api.GetRequestItemsAsync(id);
+    }
+
+    private async Task Cancel(long id)
+    {
+        var err = await Api.CancelRequestAsync(id, "Отменено");
+        if (err is null) SetStatus("Заявка отменена."); else SetStatus($"Ошибка: {err}", true);
         await LoadRequests();
     }
 
-    private async Task IssueSelectedItem()
+    private async Task IssueItem(int productId)
     {
-        if (SelectedRequestId <= 0 || SelectedItemProductId <= 0 || IssueWarehouseId <= 0 || IssueQty <= 0)
+        if (IssueWarehouseId <= 0)
         {
-            Status = "Выберите заявку, позицию, склад и количество > 0.";
+            SetStatus("Выберите склад для выдачи.", true);
+            return;
+        }
+        if (IssueQty <= 0)
+        {
+            SetStatus("Укажите количество для выдачи > 0.", true);
             return;
         }
 
-        var ok = await Api.IssueItemAsync(SelectedRequestId, new IssueItemRequest(IssueWarehouseId, SelectedItemProductId, IssueQty, "Выдано по заявке"));
-        Status = ok ? "Позиция выдана." : "Ошибка выдачи позиции.";
+        var err = await Api.IssueItemAsync(SelectedRequestId,
+            new IssueItemRequest(IssueWarehouseId, productId, IssueQty, "Выдано по заявке"));
+
+        if (err is null)
+            SetStatus("Позиция выдана.");
+        else
+            SetStatus($"Ошибка выдачи: {err}", true);
+
         SelectedItems = await Api.GetRequestItemsAsync(SelectedRequestId);
+        IssueQty = 0;
         await LoadRequests();
     }
 }

@@ -50,6 +50,33 @@ public class MovementsController(WarehouseDbContext db) : ControllerBase
             .Take(500)
             .ToListAsync();
 
-        return Ok(items);
+        var userIds = items.Where(x => x.PerformedById != null).Select(x => x.PerformedById!).Distinct().ToList();
+        var users = await db.Users.Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.Username);
+
+        var productIds = items.Select(x => x.ProductId).Distinct().ToList();
+        var products = await db.Products.Where(p => productIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id, p => new { p.Sku, p.Name });
+
+        var warehouseIds = items.Select(x => x.WarehouseId).Distinct().ToList();
+        var warehouses = await db.Warehouses.Where(w => warehouseIds.Contains(w.Id)).ToDictionaryAsync(w => w.Id, w => w.Name);
+
+        var result = items.Select(m => new
+        {
+            m.Id,
+            m.WarehouseId,
+            WarehouseName = warehouses.GetValueOrDefault(m.WarehouseId, "—"),
+            m.ProductId,
+            ProductSku = products.TryGetValue(m.ProductId, out var p) ? p.Sku : "—",
+            ProductName = p?.Name ?? "—",
+            m.Type,
+            m.Quantity,
+            m.OccurredAt,
+            m.DocumentNumber,
+            m.Comment,
+            m.PerformedById,
+            PerformedByName = m.PerformedById != null ? users.GetValueOrDefault(m.PerformedById, "—") : "—",
+            m.RequestId
+        });
+
+        return Ok(result);
     }
 }

@@ -2,106 +2,171 @@
 @inject ApiClient Api
 
 <h1 class="page-title">Пользователи и роли</h1>
-<p class="page-subtitle">Администрирование пользователей и ролей доступа.</p>
+<p class="page-subtitle">Администрирование пользователей, ролей и отделов.</p>
 
 @if (!string.IsNullOrWhiteSpace(Status))
 {
-    <section class="card">@Status</section>
+    <section class="card" style="@(IsError ? "color:#c62828;border-left:4px solid #c62828;" : "")">@Status</section>
 }
 
-<div class="grid cols-2">
-    <section class="card">
-        <h3>Пользователи</h3>
-        <div class="toolbar">
-            <button @onclick="Load">Обновить</button>
-        </div>
-        <table>
-            <thead>
+<section class="card">
+    <h3>Пользователи</h3>
+    <div class="toolbar">
+        <button @onclick="Load">Обновить</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Логин</th>
+                <th>Email</th>
+                <th>Отдел</th>
+                <th>Роли</th>
+                <th>Статус</th>
+                <th>Управление ролями</th>
+                <th>Сменить отдел</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in UserList)
+            {
                 <tr>
-                    <th>Логин</th>
-                    <th>Email</th>
-                    <th>Статус</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Users)
-                {
-                    <tr>
-                        <td>@user.Username</td>
-                        <td>@user.Email</td>
-                        <td>@(user.IsActive ? "Активен" : "Неактивен")</td>
-                        <td>
+                    <td>@user.Username</td>
+                    <td>@user.Email</td>
+                    <td>@(user.Department?.Name ?? "—")</td>
+                    <td>
+                        @if (user.Roles.Count == 0)
+                        {
+                            <span style="color:#999;">нет ролей</span>
+                        }
+                        else
+                        {
+                            @foreach (var role in user.Roles)
+                            {
+                                <span class="badge" style="margin-right:4px;">
+                                    @role
+                                    <button style="margin-left:4px;padding:0 4px;font-size:12px;cursor:pointer;" @onclick="() => RemoveRole(user.Id, role)">✕</button>
+                                </span>
+                            }
+                        }
+                    </td>
+                    <td>@(user.IsActive ? "Активен" : "Неактивен")</td>
+                    <td>
+                        <div style="display:flex;gap:4px;align-items:center;">
                             <select @onchange="(e) => OnRoleChanged(user.Id, e.Value?.ToString())">
-                                <option value="Storekeeper">Storekeeper</option>
-                                <option value="DepartmentHead">DepartmentHead</option>
-                                <option value="Admin">Admin</option>
+                                <option value="">Выберите роль</option>
+                                @foreach (var r in AvailableRoles.Where(r => !user.Roles.Contains(r)))
+                                {
+                                    <option value="@r">@r</option>
+                                }
                             </select>
-                            <button @onclick="() => AssignRole(user.Id)">Назначить</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+                            <button class="btn-primary" @onclick="() => AssignRole(user.Id)">Назначить</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <select @onchange="(e) => OnDeptChanged(user.Id, e.Value?.ToString())">
+                                <option value="0">Выберите отдел</option>
+                                @foreach (var d in Departments)
+                                {
+                                    <option value="@d.Id" selected="@(user.Department?.Id == d.Id)">@d.Name</option>
+                                }
+                            </select>
+                            <button @onclick="() => ChangeDepartment(user.Id)">Сменить</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
 
-    <section class="card">
-        <h3>Роли и права</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Роль</th>
-                    <th>Описание</th>
-                    <th>Пользователей</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Admin</td>
-                    <td>Полный доступ к системе</td>
-                    <td>@Users.Count(x => x.Roles.Contains("Admin"))</td>
-                </tr>
-                <tr>
-                    <td>Storekeeper</td>
-                    <td>Операции склада и выдача</td>
-                    <td>@Users.Count(x => x.Roles.Contains("Storekeeper"))</td>
-                </tr>
-                <tr>
-                    <td>DepartmentHead</td>
-                    <td>Согласование заявок</td>
-                    <td>@Users.Count(x => x.Roles.Contains("DepartmentHead"))</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-</div>
+<section class="card">
+    <h3>Роли и права</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Роль</th>
+                <th>Описание</th>
+                <th>Пользователей</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Admin</td>
+                <td>Полный доступ к системе</td>
+                <td>@UserList.Count(x => x.Roles.Contains("Admin"))</td>
+            </tr>
+            <tr>
+                <td>Storekeeper</td>
+                <td>Операции склада, выдача, редактирование продукции</td>
+                <td>@UserList.Count(x => x.Roles.Contains("Storekeeper"))</td>
+            </tr>
+            <tr>
+                <td>DepartmentHead</td>
+                <td>Согласование заявок, просмотр сотрудников</td>
+                <td>@UserList.Count(x => x.Roles.Contains("DepartmentHead"))</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
 
 @code {
-    private List<AdminUserDto> Users { get; set; } = [];
+    private List<AdminUserDto> UserList { get; set; } = [];
+    private List<DepartmentDto> Departments { get; set; } = [];
     private Dictionary<string, string> SelectedRoleByUser { get; set; } = new();
+    private Dictionary<string, int> SelectedDeptByUser { get; set; } = new();
     private string Status { get; set; } = "";
+    private bool IsError { get; set; }
+    private static readonly string[] AvailableRoles = ["Admin", "Storekeeper", "DepartmentHead"];
 
     protected override async Task OnInitializedAsync() => await Load();
 
+    private void SetStatus(string msg, bool error = false) { Status = msg; IsError = error; }
+
     private async Task Load()
     {
-        Users = await Api.GetAdminUsersAsync();
-        foreach (var user in Users.Where(u => !SelectedRoleByUser.ContainsKey(u.Id)))
-        {
-            SelectedRoleByUser[user.Id] = "Storekeeper";
-        }
-    }
-
-    private async Task AssignRole(string userId)
-    {
-        var role = SelectedRoleByUser[userId];
-        var ok = await Api.AssignRoleAsync(new AssignRoleRequest(userId, role));
-        Status = ok ? $"Роль {role} назначена." : "Не удалось назначить роль (нужна роль Admin).";
-        await Load();
+        UserList = await Api.GetAdminUsersAsync();
+        Departments = await Api.GetDepartmentsAsync();
     }
 
     private void OnRoleChanged(string userId, string? role)
     {
-        SelectedRoleByUser[userId] = string.IsNullOrWhiteSpace(role) ? "Storekeeper" : role;
+        SelectedRoleByUser[userId] = role ?? "";
+    }
+
+    private void OnDeptChanged(string userId, string? deptId)
+    {
+        SelectedDeptByUser[userId] = int.TryParse(deptId, out var id) ? id : 0;
+    }
+
+    private async Task AssignRole(string userId)
+    {
+        if (!SelectedRoleByUser.TryGetValue(userId, out var role) || string.IsNullOrWhiteSpace(role))
+        {
+            SetStatus("Выберите роль для назначения.", true);
+            return;
+        }
+        var ok = await Api.AssignRoleAsync(new AssignRoleRequest(userId, role));
+        SetStatus(ok ? $"Роль «{role}» назначена." : "Не удалось назначить роль.", !ok);
+        await Load();
+    }
+
+    private async Task RemoveRole(string userId, string roleName)
+    {
+        var ok = await Api.RemoveRoleAsync(new RemoveRoleRequest(userId, roleName));
+        SetStatus(ok ? $"Роль «{roleName}» снята." : "Не удалось снять роль.", !ok);
+        await Load();
+    }
+
+    private async Task ChangeDepartment(string userId)
+    {
+        if (!SelectedDeptByUser.TryGetValue(userId, out var deptId) || deptId <= 0)
+        {
+            SetStatus("Выберите отдел.", true);
+            return;
+        }
+        var ok = await Api.ChangeDepartmentAsync(new ChangeDepartmentRequest(userId, deptId));
+        SetStatus(ok ? "Отдел изменён." : "Не удалось изменить отдел.", !ok);
+        await Load();
     }
 }

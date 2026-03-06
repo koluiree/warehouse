@@ -67,13 +67,16 @@ using (var scope = app.Services.CreateScope())
         await db.SaveChangesAsync();
     }
 
-    var adminRole = await db.Roles.FirstOrDefaultAsync(x => x.Name == "Admin");
-    if (adminRole is null)
+    foreach (var roleName in new[] { "Admin", "Storekeeper", "DepartmentHead" })
     {
-        adminRole = new Role { Name = "Admin" };
-        db.Roles.Add(adminRole);
-        await db.SaveChangesAsync();
+        if (!await db.Roles.AnyAsync(x => x.Name == roleName))
+        {
+            db.Roles.Add(new Role { Name = roleName });
+        }
     }
+    await db.SaveChangesAsync();
+
+    var adminRole = await db.Roles.FirstAsync(x => x.Name == "Admin");
 
     var adminUser = await db.Users.FirstOrDefaultAsync(x => x.Username == "admin");
     if (adminUser is null)

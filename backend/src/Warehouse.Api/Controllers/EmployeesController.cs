@@ -7,7 +7,7 @@ namespace Warehouse.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "DepartmentHead,Admin")]
 public class EmployeesController(WarehouseDbContext db) : ControllerBase
 {
     [HttpGet]

@@ -39,6 +39,8 @@
                 <th>Наименование</th>
                 <th>Склад</th>
                 <th>Ед.</th>
+                <th>Мин. кол-во</th>
+                <th>Тип</th>
                 <th>Количество</th>
                 <th>Обновлено</th>
             </tr>
@@ -51,6 +53,8 @@
                     <td>@b.Product.Name</td>
                     <td>@b.Warehouse.Name</td>
                     <td>@b.Product.Unit</td>
+                    <td>@b.Product.MinQty</td>
+                    <td>@(b.Product.IsInteger ? "Целое" : "Дробное")</td>
                     <td>@b.Quantity</td>
                     <td>@b.UpdatedAt.ToLocalTime()</td>
                 </tr>
@@ -76,10 +80,64 @@
                 <input placeholder="SKU" @bind="NewSku" />
                 <input placeholder="Наименование" @bind="NewProductName" />
                 <input placeholder="Ед. изм. (шт, кг...)" @bind="NewUnit" />
+                <input type="number" step="0.001" placeholder="Мин. кол-во (1, 0.01...)" @bind="NewMinQty" />
+                <label><input type="checkbox" @bind="NewIsInteger" /> Только целые</label>
                 <button class="btn-primary" @onclick="CreateProduct">Добавить продукт</button>
             </div>
         </div>
     </div>
+</section>
+
+<section class="card">
+    <h3>Все продукты</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>SKU</th>
+                <th>Наименование</th>
+                <th>Ед.</th>
+                <th>Мин. кол-во</th>
+                <th>Тип</th>
+                <th>Описание</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Products)
+            {
+                if (EditProductId == p.Id)
+                {
+                    <tr>
+                        <td>@p.Id</td>
+                        <td>@p.Sku</td>
+                        <td><input @bind="EditName" /></td>
+                        <td><input @bind="EditUnit" style="width:80px" /></td>
+                        <td><input type="number" step="0.001" @bind="EditMinQty" style="width:100px" /></td>
+                        <td><label><input type="checkbox" @bind="EditIsInteger" /> Целое</label></td>
+                        <td><input @bind="EditDescription" /></td>
+                        <td>
+                            <button class="btn-primary" @onclick="SaveProduct">Сохранить</button>
+                            <button @onclick="CancelEdit">Отмена</button>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>@p.Id</td>
+                        <td>@p.Sku</td>
+                        <td>@p.Name</td>
+                        <td>@p.Unit</td>
+                        <td>@p.MinQty</td>
+                        <td>@(p.IsInteger ? "Целое" : "Дробное")</td>
+                        <td>@p.Description</td>
+                        <td><button @onclick="() => StartEdit(p)">Редактировать</button></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 </section>
 
 @code {
@@ -97,6 +155,15 @@
     private string NewSku { get; set; } = "";
     private string NewProductName { get; set; } = "";
     private string NewUnit { get; set; } = "шт";
+    private decimal NewMinQty { get; set; } = 1;
+    private bool NewIsInteger { get; set; } = true;
+
+    private int EditProductId { get; set; }
+    private string EditName { get; set; } = "";
+    private string EditUnit { get; set; } = "";
+    private decimal EditMinQty { get; set; }
+    private bool EditIsInteger { get; set; }
+    private string? EditDescription { get; set; }
 
     private IEnumerable<BalanceDto> FilteredBalances => Balances.Where(x =>
         (string.IsNullOrWhiteSpace(Search) || x.Product.Sku.Contains(Search, StringComparison.OrdinalIgnoreCase) || x.Product.Name.Contains(Search, StringComparison.OrdinalIgnoreCase))
@@ -159,8 +226,46 @@
             return;
         }
 
-        var ok = await Api.CreateProductAsync(new CreateProductRequest(NewSku, NewProductName, NewUnit, null));
+        if (NewMinQty <= 0)
+        {
+            Status = "Мин. количество должно быть > 0.";
+            return;
+        }
+
+        var ok = await Api.CreateProductAsync(new CreateProductRequest(NewSku, NewProductName, NewUnit, NewMinQty, NewIsInteger, null));
         Status = ok ? "Продукт создан." : "Не удалось создать продукт (проверьте права/уникальность SKU).";
+        await LoadData();
+    }
+
+    private void StartEdit(ProductDto p)
+    {
+        EditProductId = p.Id;
+        EditName = p.Name;
+        EditUnit = p.Unit;
+        EditMinQty = p.MinQty;
+        EditIsInteger = p.IsInteger;
+        EditDescription = p.Description;
+    }
+
+    private void CancelEdit() => EditProductId = 0;
+
+    private async Task SaveProduct()
+    {
+        if (string.IsNullOrWhiteSpace(EditName) || string.IsNullOrWhiteSpace(EditUnit))
+        {
+            Status = "Заполните название и единицу измерения.";
+            return;
+        }
+        if (EditMinQty <= 0)
+        {
+            Status = "Мин. количество должно быть > 0.";
+            return;
+        }
+
+        var ok = await Api.UpdateProductAsync(EditProductId,
+            new UpdateProductRequest(EditName, EditUnit, EditMinQty, EditIsInteger, EditDescription));
+        Status = ok ? "Продукт обновлён." : "Не удалось обновить продукт (нужна роль Storekeeper).";
+        EditProductId = 0;
         await LoadData();
     }
 }

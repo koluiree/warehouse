@@ -23,7 +23,7 @@ public class InventoryController(WarehouseDbContext db) : ControllerBase
             {
                 b.Id,
                 Warehouse = new { w.Id, w.Name },
-                Product = new { p.Id, p.Sku, p.Name, p.Unit },
+                Product = new { p.Id, p.Sku, p.Name, p.Unit, p.MinQty, p.IsInteger },
                 b.Quantity,
                 b.UpdatedAt
             };
@@ -50,6 +50,11 @@ public class InventoryController(WarehouseDbContext db) : ControllerBase
             return BadRequest("Quantity must be positive.");
         }
 
+        var product = await db.Products.FindAsync(request.ProductId);
+        if (product is null) return BadRequest("Product not found.");
+        var qtyErr = ValidateQuantity(request.Quantity, product);
+        if (qtyErr is not null) return BadRequest(qtyErr);
+
         await ApplyInventoryOperation(request, request.Quantity, MovementTypes.Receipt);
         return Ok();
     }
@@ -62,6 +67,11 @@ public class InventoryController(WarehouseDbContext db) : ControllerBase
         {
             return BadRequest("Quantity must be positive.");
         }
+
+        var product = await db.Products.FindAsync(request.ProductId);
+        if (product is null) return BadRequest("Product not found.");
+        var qtyErr = ValidateQuantity(request.Quantity, product);
+        if (qtyErr is not null) return BadRequest(qtyErr);
 
         var balance = await db.StockBalances.FirstOrDefaultAsync(x =>
             x.WarehouseId == request.WarehouseId && x.ProductId == request.ProductId);
@@ -108,5 +118,14 @@ public class InventoryController(WarehouseDbContext db) : ControllerBase
         });
 
         await db.SaveChangesAsync();
+    }
+
+    private static string? ValidateQuantity(decimal quantity, Product product)
+    {
+        if (product.IsInteger && quantity != Math.Truncate(quantity))
+            return "Для данного продукта допустимо только целое количество.";
+        if (product.MinQty > 0 && quantity < product.MinQty)
+            return $"Минимальное количество для операции: {product.MinQty}.";
+        return null;
     }
 }

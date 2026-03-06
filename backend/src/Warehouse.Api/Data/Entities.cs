@@ -58,6 +58,8 @@ public class Product
     public string Sku { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Unit { get; set; } = string.Empty;
+    public decimal MinQty { get; set; } = 1;
+    public bool IsInteger { get; set; } = true;
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
 }

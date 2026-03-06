@@ -13,7 +13,8 @@
         <thead>
             <tr>
                 <th>Дата</th>
-                <th>SKU</th>
+                <th>Склад</th>
+                <th>Продукт</th>
                 <th>Тип</th>
                 <th>Кол-во</th>
                 <th>Документ</th>
@@ -26,12 +27,13 @@
             {
                 <tr>
                     <td>@m.OccurredAt.ToLocalTime()</td>
-                    <td>@m.ProductId</td>
+                    <td>@m.WarehouseName</td>
+                    <td>@m.ProductSku — @m.ProductName</td>
                     <td>@m.Type</td>
                     <td>@m.Quantity</td>
                     <td>@m.DocumentNumber</td>
                     <td>@m.Comment</td>
-                    <td>@m.PerformedById</td>
+                    <td>@m.PerformedByName</td>
                 </tr>
             }
         </tbody>
