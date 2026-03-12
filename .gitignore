@@ -40,3 +40,5 @@ packages/
 # Frontend package caches (if added later)
 node_modules/
 dist/
+docs/assets/diagrams/диаграмма_деятельности.puml
+docs/assets/diagrams/диаграмма_последовательностей.puml
